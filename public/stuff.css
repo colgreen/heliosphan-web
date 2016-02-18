@@ -89,6 +89,12 @@ a:visited {
 /* Style overrides for narrow screens. */
 @media screen and (max-width: 680px) 
 {
+    html, body 
+    {
+        padding: 1px;
+        margin: 0px;
+    }
+
     .bannercolumn
     {
        width:100%;
@@ -119,4 +125,18 @@ a:visited {
         border-radius: 5px;
         width:90%;
     }
+
+    .articlebodyouter
+    {
+       width:100%;
+       max-width: 1200px;
+       margin: 2px 0;
+    }
+
+    .articlebodyinner
+    {
+       padding: 0px 8px;
+       border-radius:3px;
+       background-color:#ffffff;
+    }  
 }
