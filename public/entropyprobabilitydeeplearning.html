@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Entropy, Probability and Deep Learning</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen"/>
+    <!-- Google Analytics -->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-64605921-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+      <div class="articlebodyinner">
+        <br/>
+        <h1 align="center">Entropy, Probability and Deep Learning</h1>
+        <h4 align="center">Colin Green, July 2015</h4>
+        <br />
+        
+        <p>Most day to day life comes down to the management of entropy - creating order from disorder. Mostly things revert to a disordered 
+        state without some human input - washing/cleaning, repairing, trimming, replacing, refueling.</p>
+
+        <p>Mess often comes in the form of the natural spreading out of things, and tidying is moving them back to their 'proper' place. Brushing 
+        dirt off the path, putting toys back in the box, or moving the logic in an algorithm into well defined methods and behind well defined 
+        interface points.</p>
+
+        <p>How this relates to entropy rather depends on the context, but broadly, you put put the toys in the box so that you can (A) Find them
+        easily next time they're needed, (B) So they're not in boxes of unrelated items causing delay searching for other things. You separate out
+        cutlery into forks, knives, spoons, teaspoons for the same reason. It's all about efficiency. Consider the extreme alternative where 
+        everything just lies about the house with no order - want a fork? I think I saw one under the tennis shoe, but you might want to give it a
+        thorough clean first!! OK, where's the tennis shoe? Life would be spent looking for things, cleaning. Separating things into groups of the
+        same thing results in much less mental effort tracking where everything is, it reduces searches from O(N) to O(log N). And when N is large
+        that's the difference between being able to live or not.</p>
+
+        <p>In the software and business worlds the phrase 'technical debt' is banded about, and it amounts to the same issue - are things where
+        they need to be to make the software development process efficient? And because software doesn't have the constraints or visibility of 
+        items in the physical world, things tends to be much worse. i.e. if your house starts to get messy it becomes unbearable and you make an
+        effort to sort it out, but if your house was as disordered as many software projects then you wouldn't be able to live. Often
+        efficiency is worse than O(N), perhaps O(N^2) or worse, due to dependencies that shouldn't exist, or perhaps overly complex logic that 
+        performs some simple task almost as a side effect to some incomprehensible evolutionary process.</p>
+
+        <p>How bad or good things are structured depends on what you want to do, i.e. whether some system is ordered sort of depends on the 
+        question - with respect to what? But in reality, if things that are similar are grouped together, that is a general concept that works for
+        pretty much any goal or task. There might be very specific structures that work really well for specific tasks, but the grouping of things
+        is a general strategy that works well everywhere, i.e. is not awful for any specific system/task.</p>
+
+        <p>So then we turn to information theory, here the concept of entropy takes the form of Shannon entropy - basically the amount of
+        information (e.g. measured in bits, or nats) required to describe some thing, such as a picture or some time series data, a video,
+        whatever.</p>
+
+        <p>Consider pictures. If I create an image file where all the pixels are randomly generated, then the image has high entropy, there is no
+        more compact way of representing it than just describing the RGB of each pixel. If however we point a camera anywhere...inside or outside,
+        day or night, zoomed in or out, attached to a telescope or a microscope - there will be lots of structure in all of those images (apart 
+        from the ones that are just pure white/grey/black which obviously are easy to compress), because there is lots of structure in the real 
+        world. Our naive encoding by describing each pixel is now highly suboptimal. This is where GIFs, PNGs and JPEGs, etc. came in. There are
+        some really obvious ways of describing images in more compact ways, e.g. most pixels are very similar in colour and shade to adjacent 
+        pixels. You could say that those image encodings were a form of early AI, because the encoding schemes embody something that is known about 
+        the system that produced the images (the world, the laws of physics in general, and/or the human visual system), and use that knowledge to
+        define a compact representation.</p>
+
+        <p>JPEGs in particular are pretty neat. They break an image into little squares and represent each square as the composite of lots of
+        predefined image components, e.g. a block with a light shading on one side, dark on the other. You find the component with the closest
+        match, extract it, then find the next closest match in the 'residual', extract it, and so on. You can get a smaller file by simply limiting
+        how many components you extract from each block, but you are left with varying amounts of residuals, i.e. JPEG artifacts (NB. This isn't 
+        quite how JPEG works, but it's close enough for this discussion). It turns out that this works really well compared to those other 'naive'
+        encodings, and it's simple enough that it has become ubiquitous and will be hard to beat. JPEG took the low hanging fruit on the path to more
+        compact image representations.</p>
+
+        <p>What's this got to do with entropy? Well, we took lots of pixels and and found a compact representation for them, i.e. we found that we 
+        could represent the image with far less information than that suggested by the raw pixels. We did this with a process very similar to putting
+        toys in a box, i.e. we grouped things that were similar. In this case the things were little squares with various patterns of pixels, the 
+        patterns that occur a lot are given a code so we can say... pattern #1 looks like this, so we don't have to describe the pixels in full each
+        time we see that pattern.</p>
+
+        <p>It turns out that you can take this concept further, to a sort of logical conclusion. So e.g. JPEG breaking images into blocks seems like
+        an unnatural and artificial approach, as does the choice of image components. Could we just learn the optimal components and the optimal 
+        'chunks'/areas/sections of image to work on? Sure, that's basically what deep learning is doing, but the core concept is that of 'modelling 
+        the system', i.e. here is some system (e.g. a set of images), what is the most compact way of representing the entire set? What are the common
+        features? Rather than a human observing that adjacent pixels are mostly similar and creating a trivial encoding scheme around that, we could 
+        define an automatic process for finding/discovering useful representations. And probably the broadest general model in this area is the notion
+        of hierarchies of features i.e. images are made up of lines, that make up shaped edges, that make up objects, etc. So e.g. we might have a node
+        or nodes in a hierarchy that represent 'ball shape' and 'wheel shape', those nodes feed down to activate the pixels to create a ball shape with
+        the appropriate size, orientation, shading, etc, but how do we do all of those things?</p>
+
+        <p>The answer is that we expand the notion of a hierarchy (i.e a tree) to that of a network (a directed acyclic graph or DAG). You can think of 
+        a DAG as being lots of trees all connected to each other, so now a node can have a parent that says 'I want a ball shape', and another parent 
+        that says 'red', and so on, such that we cover all of the relevant concepts (orientation, texture, whatever).</p>
+
+        <p>If we define such a model and train it then we should be able to get it to learn all relevant concepts automatically. The relevant training
+        metric here is entropy, or the amount of information required to describe the images being trained on. What does that mean if we have a DAG with
+        a fixed topology (say)? Minimising entropy amounts to maximising the probability that our model will generate the images in the training set. So
+        e.g. at the highest level, if our set contains a 50/50 split between images of cats and boats then we would expect the model to have somewhere 
+        within it a 50/50 flip between a 'cat mode' and 'boat mode'</p>
+
+        <p>The problem of maximising the probability of generating the image set can be decomposed by taking each image in turn and maximising the 
+        probability of generating that image. One way to do that is to feed the image in at the pixels layer, propagate up the activations, observe which
+        nodes are activated at the highest layers, propagate their activations down to get a new image - and compare with the starting image. But now we
+        have pixel level errors breaking the approach, i.e. e.g. say we recreate the image perfectly but shifted one pixel to the right. What we really
+        want is for the generated image to have the same pattern of node activations throughout the DAG (at all layers) as the original image, i.e. the 
+        same pattern of 'concept' activations.</p>
+
+        <p>Such an approach can learn all relevant visual concepts - size, orientation, colour, shade, shiny, fluffy, animal, rock, whatever. The key is
+        that internally each node is settling on representing one concept, and the concepts chosen are the ones that explain the most variance, are the 
+        most prominent features (principal features), that result in the model generating the training set with the highest probability, which in turn is
+        equivalent to representing the training set with the least amount of information 
+        (see <a href="https://en.wikipedia.org/wiki/Entropy_(information_theory)">Shannon Entropy</a> for more on the link between probability and amount
+        of information).</p>
+        <br/>
+        <br/>
+        <hr/>
+        <div style="margin-left:10;">
+          <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" />
+          2015 Colin Green.<br/>
+          This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+            Creative Commons
+            Attribution 3.0 License
+          </a>
+          <br/>
+          <br/>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

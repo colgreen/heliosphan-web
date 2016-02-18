@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Netflix Prize: Feature Error Curve</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <link rel="stylesheet" href="../stuff.css" type="text/css" media="screen"/>
+    <!-- Google Analytics -->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-64605921-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div class="bannercolumn">
+      <a href="../index.html">
+            <img src="../banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>  
+    </div>
+    <div class="articlebodyouter">
+      <div class="articlebodyinner">
+        <br/>
+        <h1 align="center">Netflix Prize: Feature Error Curve</h1>
+        <h4 align="center">Colin Green, 2008</h4>
+        <br />
+        <br />
+        A major development towards achieving the goal of the Netflix Prize was the discovery that a recently divised sparse matrix factorization
+        method was well suited to and performed competitively on the prize task. For more info see:
+        <ul>
+          <li>
+            <a href="http://sifter.org/~simon/journal/20061027.2.html">Netflix Challenge</a> (October 27, 2006)
+          </li>
+          <br/>
+          <li>
+            <a href="http://sifter.org/~simon/journal/20061102.1.html">Netflix Update: Don't Try This at Home</a> (November 02, 2006)
+          </li>
+          <br/>
+          <li>
+            <a href="http://sifter.org/~simon/journal/20061211.html">Netflix Update: Try This at Home</a> (December 11, 2006)
+          </li>
+          <br/>
+          <li>
+            <a href="http://www.dcs.shef.ac.uk/~genevieve/gorrell06.pdf">Generalized Hebbian Algorithm for Incremental Singular Value Decomposition in Natural Language Processing</a>,
+            Genevieve Gorrell, Department of Computer and Information Science, Linkoping University.
+          </li>
+          <br/>
+          <li>
+            <a href="http://www.dcs.shef.ac.uk/~genevieve/gorrell_webb.pdf">Generalized Hebbian Algorithm for Incremental Latent Semantic Analysis</a>,
+            Genevieve Gorrell and Brandyn Webb.
+          </li>
+        </ul>
+        <br/>
+        <p>
+          So we have an N x M sparse matrix of ratings (users x movies) and two factored out vectors, a user vector of length N
+          and a movie vector of length M. Following factorization we may also chose to maintain a sparse matrix of rating residuals,
+          this represents the portion of each rating not accounted for by the two factored out vectors. That is, we can multiply the
+          two vectors, add the resulting matrix to the residuals matrix and we have reconstructed the original ratings matrix.
+        </p>
+
+        <p>
+          The residuals matrix allows us to put the two vectors aside and re-apply factorization to the residuals matrix.
+          Repeating this process yields multiple user and movie vector pairs and a residuals matrix which slowly 'erodes' down as the
+          most prominent 'features' are factored out of the data (as as side note the number of vector pairs that are factored out is
+          referred to as the rank of the factorization, that is, rank N factorization yields N vector pairs).
+        </p>
+
+        <p>From Simon Funk...</p>
+        <p style="margin-left:40px">
+          <i>
+            The end result of SVD is essentially a list of inferred categories, sorted by relevance. Each category in turn is expressed
+            simply by how well each user and movie belong (or anti-belong) to the category. So, for instance, a category might represent
+            action movies, with movies with a lot of action at the top, and slow movies at the bottom, and correspondingly users who like
+            action movies at the top, and those who prefer slow movies at the bottom. It's completely symmetric in the sense that you
+            could just as well call it the slow movie category and reverse the lists.
+          </i>
+        </p>
+        <p style="margin-left:40px">
+          <i>
+            The actual categories it discovers are... whatever the data implies. The algorithm has no inherent concept of action, and
+            doesn't even get to see the movie titles let alone any details about the movie itself. All it gets is a hundred million
+            examples of: user 17538 gives movie 4819 a rating of 3. So it's interesting to see what it comes up with.
+          </i>
+        </p>
+        <br/>
+        <p>
+          We refer to the inferred categores as 'features' of the data. The most prominent features are factored out first (the
+          features that have the greatest ability to explain the variance in the remaining residual ratings). It's also worth noting
+          that there's a circularity in how the features are defined and discovered, that is, a feature is defined by the degree to
+          which each user and movie is in that feature (there is nothing of a more concrete nature to refer back to), while at the
+          same time each user and movie's single factorization value represents how much the user and movie are in that feature. This
+          circularity is perhaps the trickiest part of the method for the uninitiated to 'get their head around', hence a certain
+          amount of incredulity can be expected when trying to explain this method to a general audience. People in everyday life
+          tend to think in strict hierarchies, C derives from B derives from A.
+        </p>
+
+        <p>
+          Each feature then is represented by the degree to which each user and movie is in that feature, that is, the user and
+          movie vector pair, there is not a more compact representation than this. If we multiply the two vectors we get a matrix that
+          contains the portion of the known ratings that have been represented by the feature, and for all of the unknown ratings we
+          get a prediction for that rating based on that feature. We can get increasingly better predictions (up to a limit) by
+          summing the predictions from each successive feature.
+        </p>
+        <br/>
+
+        <h3>Feature Error Curve</h3>
+        <p>
+          If we multiply the vector pair to get predictions a very noticeable type of error is observed in the predictions,
+          very simply, the predictions for low ratings tend to be too low and the predictions for high ratings tend to be too high.
+          We can see this by looking at the predictions made for known ratings and plotting a curve of predicted ratings versus the
+          known ratings that were being predicted. Here we make the error clearer by plotting predicted rating versus error/distance
+          from known rating being predicted.
+        </p>
+        <br/>
+        <div style="text-align:center;">
+          <img src="feature_output_err_1.png" alt="Remaining value versus time." />
+        </div>
+        <p>
+          The two lines come about because the ratings have been split into two sets, one training set and one 'probe' set that is
+          not trained against (and which therefore is not subject to overfitting). The two data sets each have their own error curve,
+          black is the training data curve and red the probe data curve. The obvious way of using this knowledge to improve predictions
+          is simply to adjust each rating to correct for the error based on the above plot. E.g. apply the transformation described in
+          this plot (where we flip the error sign and add it to the line y=x).
+        </p>
+        <br/>
+        <div style="text-align:center;">
+          <img src="feature_output_err_2.png" alt="Remaining value versus time." />
+        </div>
+        <p>
+          Moreover, the curves suggest nonlinearities in the data that are not represented by our linear factorization of the data.
+          Perhaps a cleverer factorization that takes into account the known curve shape (or discovers it automatically) is required?
+          Note however that each feature has a distinct error curve, and that the curve diminishes in overall magnitude/prominence for
+          each successive feature (but they tend to have the same recognisable shape) if previous features correct for their error curve.
+        </p>
+        <p>
+          In fact after 20 or so features the error curve becomes flat (apart from some noise). However, if you plot the curve after
+          a further 20 features or so of not correcting feature error then a curve begins to re-emerge. This re-emergence is, I
+          assume, the result of the accumulation of many faint curves, individually they are lost in the background noise but together
+          they become prominent again. On this basis I chose to apply the curve for the first 20 features and then again every 20.
+          Perhaps I should just keep applying a curve at each feature?
+        </p>
+        <br/>
+        <br/>
+        <hr/>
+        <div style="margin-left:10;">
+          <img src="../creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" />
+          Copyright 2008, 2010, 2011 Colin Green.<br/>
+          This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+            Creative Commons
+            Attribution 3.0 License
+          </a>
+          <br/>
+          <br/>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

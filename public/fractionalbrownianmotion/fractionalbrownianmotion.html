@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Fractional Brownian Motion</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <link rel="stylesheet" href="../stuff.css" type="text/css" media="screen"/>
+    <!-- Google Analytics -->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-64605921-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div class="bannercolumn">
+      <a href="../index.html">
+            <img src="../banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a> 
+    </div>
+    <div class="articlebodyouter">
+      <div class="articlebodyinner">
+        <br/>
+        <h1 align="center">Fractional Brownian Motion</h1>
+        <h4 align="center">Colin Green, 2008</h4>
+        <br />
+        <a href="http://en.wikipedia.org/wiki/Fractional_Brownian_motion">Fractional Brownian Motion</a>
+        <br />
+        <br />
+        <div style="text-align:center;">
+          <img src="BrownianNoise.png" alt="Brownian Noise" />
+        </div>
+        <br/>
+        <br/>
+        <div style="text-align:center;">
+          <img src="FractionalBrownianNoise.png" alt="Fractional Brownian Noise" />
+        </div>
+        <br/>
+        <br/>
+        <div style="text-align:center;">
+          <img src="BrownianMotion.png" alt="Brownian Motion" />
+        </div>
+        <br/>
+        <br/>
+        <div style="text-align:center;">
+          <img src="FractionalBrownianMotion.png" alt="Fractional Brownian Motion" />
+        </div>
+        <br/>
+        <br/>
+        <p>
+          Each plot shows 8000 samples. As the number of samples increases (as we zoom out) the brownian
+          noise plot looks increasingly like a solid bar with straight edges, whereas the Fractional Brownian
+          Motion(FBM) plot exhibits self-affinity, meaning it looks the same at any magnification (barring
+          magnifications below a lower threshold).
+        </p>
+        <p>
+          FBM data was generated using the Hosking method with a Hurst parameter (H) of 0.7. For source code
+          and an excellent thesis on FBM generation see
+          <a href="http://www.proba.ucc.ie/~td3/mastersthesis/">http://www.proba.ucc.ie/~td3/mastersthesis/</a>.
+        </p>
+        <p>
+          The Hosking method is an exact method and as such has time complexity of O(N^2). The reason for this
+          is that FBM exhibits long term dependence and therefore each new sample is dependent on all previous samples.
+          Faster approximate methods exist, which is largely the subject of the linked thesis.
+        </p>
+        <p>
+          The hosking.c file was ported to C# and ranlib was substituted with the following project which contains a
+          NormalDistribution class
+          <a href="http://www.codeproject.com/KB/recipes/Random.aspx">.NET random number generators and distributions, Stefan Troschuetz, 2007.</a>
+        </p>
+        <br/>
+        <hr/>
+        <div style="margin-left:10;">
+          <img src="../creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" />
+          Copyright 2008, 2010, 2011 Colin Green.<br/>
+          This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+            Creative Commons
+            Attribution 3.0 License
+          </a>
+          <br/>
+          <br/>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

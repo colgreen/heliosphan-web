@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Pittsburgh Brain Competition</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen" />
+    <!-- Google Analytics -->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-64605921-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+</head>
+<body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+        <div class="articlebodyinner">
+            <br />
+            <h1 align="center">
+                Pittsburgh Brain Competition</h1>
+            <h4 align="center">
+                Colin Green, 2009</h4>
+            <br />
+            <p>
+                In 2009 I achieved second place in challenge 1 of the Pittsburgh Brain Competition
+                (PBC), Fall 2009. Here I outline my approach.</p>
+            <br />
+            <h3>
+                Challenge Primer</h3>
+            <p>
+                There are three PBC data sets, one for each of three brains. The brains were scanned
+                in an MRI scanner, and, using a technique called diffusion tensor MRI millions of
+                individual axon fibers in the brian can be distinguished and located. These fibers
+                make up the <a href="http://en.wikipedia.org/wiki/White_matter">white matter</a>
+                of the brain and act as conduits connecting up the <a href="http://en.wikipedia.org/wiki/Grey_matter">
+                    grey matter</a> on the surface layers of the brain where most processing is
+                thought to occur.
+            </p>
+            <p>
+                Here is a short video that shows a small fraction of the scanned fibers, the fiber
+                colouring is a simple scheme based on fiber midpoint position and orientation and
+                allows distinct bundles of fibers to be seen.
+            </p>
+            <div style="text-align: center">
+                <iframe width="640" height="390" src="https://www.youtube.com/embed/6YFG5OnDp-Y"
+                    frameborder="0" allowfullscreen=""></iframe>
+            </div>
+            <p>
+                Each brain data set then consists of approximately 250,000 fibers, and for each
+                one a series of 3D points describes the path of the fiber. These 250k fibers represent
+                only a small fraction of the total number, the data set is thinned out to make it
+                more manageable while still remaining representative of the fiber paths, bundles
+                and relative densities fo each bundle. Also note that another level of thinning
+                out is performed to generate the visualizations to allow fast(er) rendering and
+                clearer visualization. Hence the above video shows only a very small fraction of
+                the total number of fibers in the scanned brain.
+            </p>
+            <br />
+            <div style="text-align: center;">
+                <b>Brain #1 Data Set Statistics</b>
+            </div>
+            <table border="1" cellpadding="4" cellspacing="0" style="margin-left: auto; margin-right: auto;">
+                <tr>
+                    <td>
+                        <b>Statistic</b>
+                    </td>
+                    <td>
+                        <b>Value</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        # of fibers (aka tracks).</td>
+                    <td>
+                        250,000</td>
+                </tr>
+                <tr>
+                    <td>
+                        Total number of points in all fibers.</td>
+                    <td>
+                        19,296,916</td>
+                </tr>
+                <tr>
+                    <td>
+                        Average # of points per fiber.</td>
+                    <td>
+                        77.187664</td>
+                </tr>
+                <tr>
+                    <td>
+                        Fewest points in a track.</td>
+                    <td>
+                        30</td>
+                </tr>
+                <tr>
+                    <td>
+                        Most points in a track.</td>
+                    <td>
+                        251</td>
+                </tr>
+                <tr>
+                    <td>
+                        Combined length of all fibers.</td>
+                    <td>
+                        16.21 km</td>
+                </tr>
+                <tr>
+                    <td>
+                        Shortest fiber.</td>
+                    <td>
+                        24.62 mm</td>
+                </tr>
+                <tr>
+                    <td>
+                        Longest fiber.</td>
+                    <td>
+                        213.19 mm</td>
+                </tr>
+                <tr>
+                    <td>
+                        Shortest distance between adjacent fiber points.</td>
+                    <td>
+                        0.8488 mm</td>
+                </tr>
+                <tr>
+                    <td>
+                        Longest distance between adjacent fiber points.</td>
+                    <td>
+                        0.8488 mm</td>
+                </tr>
+            </table>
+            <br />
+            <p>
+                So there are 16.21km of fibers in the data. A typical brain will contain a total
+                of around 80,000 - 180,000km of fibers [White matter] depending on subject, gender
+                and age, hence our data set represents somewhere in the region of just 0.01% of
+                all fibers in the scanned brain.
+            </p>
+            <br />
+            <h3>
+                Challenge Goal</h3>
+            <p>
+                The above video visualisation has coloured fibers based on some simple factors such
+                as the positition of a fiber's middle and the direction of the fiber at the middle.
+                This is a fairly crude colouring technique that nontheless is effective at highlighting
+                distinct bundles of fibers, that is, fibers are arranged in bundles with bundle
+                endpoints connecting up two regions of the brain. However, this method of identifying
+                bundles is crude and no match for a human expert. Challenge #1 of the PBC is to
+                find an algorithm that can group fibers into bundles. The metrric that determines
+                the quality of a bundling algorithm is based on how similar the bundles it creates
+                are to those determined by a human expert.
+            </p>
+            <br />
+            <h3>
+                Approach</h3>
+            <p>
+                Comparing generated bundles with those chosen by a human expert is simple to implement
+                but clearly leaves the question of what is it that the expert is doing that is better
+                than our best algorithms, and, what what biases are being introduced by a human
+                expert. Do all experts bundle the fibers in the same way? And if not would they
+                each agree that all of their solutions were equally good or would they disagree?
+            </p>
+            <p>
+                A better approach might be to define a mathematical definition of bundling quality
+                based on an inter-fiber distance metric and minimizing inter-fiber distance variance
+                in each bundle. In fact this was my approach to automating the bundling process,
+                bundles are essentially clusters of fibers that are close together and as known
+                clustering algorithms can be applied. I chose to use <a href="http://en.wikipedia.org/wiki/K-means_clustering">
+                    k-means clustering</a> as it is simple to implement whilst typically yielding
+                results that are similar in quality to more complex methods.
+            </p>
+            <p>
+                To use k-means we need a distance metric, that is, for any given two fibers we need
+                a means of measuring the distance between them. Some approaches are:
+            </p>
+            <ol>
+                <li>Distance between fiber mid-points. This ignores fiber orientation, e.g. the fibers
+                    may follow entirely different paths but happen to cross over in the middle.</li>
+                <li>Combined distance between endpoints. This poses the problem of which endpoints should
+                    be compared, e.g. if we have fibers A and B with ends 1 and two then shopuld we
+                    compare A1,B1 + A2,B2 or A1,B2 + A2,B1. This is easily resolved by perfroing both
+                    comparisons and selecting the shortest distance. An additional problem here is that
+                    bundle ends to splay out, like teh end of a frayed piece of string. Thus two fibers
+                    may be very closely aligned for the majority of their lengths and then diverge significantly
+                    at the ends.</li>
+                <li>Loop over each point in fiber 1 and for each point find the closest point on fiber
+                    2. Take the average distance between points. This approach reasonably well but is
+                    slow. However it can be sped up without significant loss of quality by comparing
+                    only a subset of representative points along the length of fiber 1.</li>
+                <li>I further refined (3) as follows. Translate both fibers so that their mid points
+                    are co-located (e.g. at position 0,0,0). Comparing the fibers as in (3) now gives
+                    us a fiber orientation similarity measure. And the distance between their mid points
+                    (prior to translation) gives us a distance measure. We have effectively divided
+                    (3) into two seperate measured that can now be weighted. By trial and error a weighting
+                    was found that perfomed better than (3) at funding bunldes that similar to the expertly
+                    chosen ones (the challenge scoring method). Motivation for this approach was the
+                    observation that some bundles are elongate surfaces/manifolds rather than compact
+                    sphere shapes, e.g. one bundle was made up of horseshoe shaped fibers arranged as
+                    a long half-tube shape; Thus fibers at either end of the tube are actually distant
+                    from each other but have very similar shape and orientation. This is the classic
+                    problem in clustering of non-spherical clusters, e.g. sausage shaped clusters are
+                    common, and our half-tube bundle does infact describe a sausage-like shape in the
+                    space described by our distance metric.</li>
+            </ol>
+            <p>
+                Approach (4) still contains some crude elements most notably translating the fibers
+                based on their mid points (as determined by point position in list of the fiber
+                points), however this works reasonably well, partly because points are more or less
+                equally distanced along the fibers, thus the mid point in the list of points will
+                generally be very close to the actual mid point along a fiber's length.
+            </p>
+            <br />
+            <h3>
+                K-medoids</h3>
+            <p>
+                k-medoids is a variant on k-means in which the cluster centers (centroids) are restricted
+                to be one of the data points in the cluster, as opposed to the coordinate that represents
+                the center of all the data points in the cluster. This is useful if no connvenient
+                coordinate system is available for representing such a mid-point. My approach falls
+                into this category, I have a distance metric that defines a distance between fibers
+                but no actual coordinate system to represent the positions of fibers in that space.
+                As such we can define one of the fibers as the centroid and this then becomes known
+                as a medoid, thus my algorithm is actually k-medoids. The centroid fiber is defined
+                simply as the one that has the shortest average squared distance to all other fibers
+                in the cluster, this selects the fiber that results in the lowest variance for the
+                cluster (the lowest squared distance from each fiber in the bundle to the bundle
+                center/medoid).
+            </p>
+            <br />
+            <h3>
+                Challenge Scoring</h3>
+            <p>
+                For challenge #1 scoring the identified bundles of fibers are compared to those
+                identifed by an expert. For comparison bundles were numbered and initially you had
+                to be careful to assign the right number to the submitted bundles. Later the scoring
+                was changed to automatically select bundles for comparison by selecting the submitted
+                bundle closest to each of the expert's bundles (with the caveat that a submitted
+                bundle can't be selected more than once).
+            </p>
+            <p>
+                Scoring for each bundle was based on how many fibers you had correctly classified
+                and misclassified. So in a submitted bundle there would be H correctly classified
+                fibers (bundle 'hits') and M misclassified fibers (bundle 'misses'). The score for
+                the bundle is then given by:
+            </p>
+            <p style="margin-left: 40px">
+                score = (H - M) / T</p>
+            <p>
+                Where T is the total number of fibers in the expert's bundle. Hence max score per
+                bundle is 1.0. Scores below 0 are truncated to 0. The challenge score was the average
+                score for all bundles, of which there were eight.
+            </p>
+            <p>
+                Very possibly this scoring system can be improved, but for the purposes of the competition
+                it worked well enough.
+            </p>
+            <br />
+            <h3>
+                Results</h3>
+            <p>
+                I achieved 2nd place with a score of 0.3347 (<a href="http://pbc.lrdc.pitt.edu/?q=2009b-results-summary">ICDM
+                    PBC Fall 2009 Results - Summary Tables</a>). This was someway behind the winner
+                <a href="http://pbc.lrdc.pitt.edu/?q=2009b-winner-ch1">Vladimir Nikulin</a> with
+                a score of 0.5037. Nikulin detailed his approach in <a href="http://schweb1.lrdc.pitt.edu/pbc/2009b/media/Nikulin_ICDM_PBC_2009_methods.pdf">
+                    "Identifying fiber bundles with regularised k-means clustering applied to the grid-based
+                    data"</a>, Vladimir Nikulin, Department of Mathematics, University of Queensland.
+            </p>
+            <p>
+                Interestingly Nikulin also used k-means clustering but fairly crucially used a version
+                with a form of regularization that attempts to create more stable clusters by avoiding
+                very small unstable clusters and also very large clusters. Nikulin...
+            </p>
+            <p style="margin-left: 40px; max-width: 500px">
+                <i>...There are two major problems here: stability of clustering and meaningfulness
+                    of centroids as cluster representatives. On the one hand, big clusters impose strong
+                    smoothing and possible loss of very essential information. On the other hand, small
+                    clusters are, usually, very unstable and noisy. Accordingly, they can not be treated
+                    as equal and independent represen- tatives. To address the above problems, we applied
+                    regularisation to prevent the creation of super big clusters, and to attract data
+                    to existing small clusters. </i>
+            </p>
+            <p>
+                There appears to be good motivation for use of a regularized form of k-means in
+                high dimensional data and the performance in this challenge is promising. For me
+                this was probably the main lesson to be taken from this challenge.
+            </p>
+            <br />
+            <h3>
+                Regularized k-means</h3>
+            <p>
+                Consider applying k-means to points in Euclidean space. Typically we take the Euclidean
+                distance between two points, so for point p and q we have:
+            </p>
+            <p style="margin-left: 40px">
+                D = || p - q ||</p>
+            <p>
+                What Nikulin did was to add a regularizarion term to the distance, so that we get:</p>
+            <p style="margin-left: 40px">
+                D = || p - q || + R<sub>c</sub><br />
+                R<sub>c</sub> = (α·L·#c) / m
+            </p>
+            Where:
+            <p style="margin-left: 40px">
+                α - Regularization constant.<br />
+                L - Maximum distance between any point and any of the current centroids.<br />
+                #c - Membership size of cluster c.<br />
+                m - Total number of all points.
+            </p>
+            <p>
+                So there is some degree of punishment against cluster size which would e.g. result
+                in points that lie equidistant between clusters become assigned to the smaller cluster.
+                L appears to be constant during any one iteration thus it seems to act as a means
+                of reducing the regularisation term as clusters become more stable; perhaps a similar
+                effect could be achieved by gradually reducing α?
+            </p>
+            <br />
+            From <a href="http://www.maths.uq.edu.au/~gjm/cibb/nm_cibb09.pdf">REGULARISED k-MEANS
+                CLUSTERING FOR DIMENSION REDUCTION APPLIED TO SUPERVISED CLASSIFICATION (pdf)</a>,
+            Vladimir Nikulin, Geoffrey J. McLachlan:
+            <p style="margin-left: 40px">
+                <i><b>Regularised k-means clustering</b> Stability in cluster analysis is strongly dependent
+                    on the data set, especially, on how well separated and how homogeneous the clusters
+                    are. Stability is a very important aspect in cluster analysis. Stability means that
+                    a meaningful valid cluster should not disappear easily if the data set is changed
+                    in a non-essential way [12]. On the one hand, big clusters impose strong smoothing
+                    and possible loss of very essential information. On the other hand, small clusters
+                    are, usually, very unstable and noisy. Accordingly, they can not be treated as equal
+                    and independent representatives. The target of the following below regularisation
+                    is to prevent creation of super big clusters, and to attract data to existing small
+                    clusters. </i>
+            </p>
+            Also, this is somewhat related to fuzzy k-means and Expectation Maximization, etc.
+            but with more efficient algorithmic time complexity.
+            <br />
+            <br />
+            <br />
+            <hr />
+            <div style="margin-left: 10;">
+                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" />
+                Copyright 2009, 2010, 2011 Colin Green.<br />
+                This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/"
+                    rel="nofollow">Creative Commons Attribution 3.0 License </a>
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+</body>
+</html>

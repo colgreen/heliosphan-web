@@ -1,0 +1,122 @@
+body
+{
+    background: #253e49;
+    font-family: Arial, Helvetica;
+    /* font-size: 16px; */
+}
+
+a {
+    color: #0e6211;
+    text-decoration: underline;
+}
+a:visited {
+    color: #4f4f4f;
+}
+
+.bannercolumn
+{
+   width:97%;
+   max-width: 1200px;
+   margin: 0 auto;
+   text-align: left;
+   border-radius:3px;
+   overflow:hidden;
+   background-color: #02050a;
+}
+
+.centralcolumn
+{
+   color:Black;
+   background-color: #ffffff;
+   width:97%;
+   max-width: 1200px;
+   margin: 0 auto;
+   border-radius:3px;
+}
+
+.centralcolumninner
+{
+   color:Black;	
+   width:98%;
+   max-width: 1200px;
+   margin: 10px auto;   
+   overflow:hidden;
+}
+
+.frontpagebubble
+{
+    background-color: #e4ecef;
+    padding: 15px;
+    border-radius: 5px;
+    width:55%;
+    max-width: 530px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.9em;
+}
+.frontpagebubble li {list-style-type: none;}
+
+.frontpagefooter
+{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.articlebodyouter
+{
+   width:97%;
+   max-width: 1200px;
+   margin: 10px auto;
+}
+
+.articlebodyinner
+{
+   padding: 0px 48px;
+   border-radius:3px;
+   background-color:#ffffff;
+}
+
+.code
+{
+   line-height: 1em;
+   display: block;
+   font-family: monospace;
+   white-space: pre;
+   margin: 1em 0px;
+   border: 1px dotted black;
+}
+
+/* Style overrides for narrow screens. */
+@media screen and (max-width: 680px) 
+{
+    .bannercolumn
+    {
+       width:100%;
+    }
+
+    .centralcolumn
+    {
+       color:Black;
+       background-color: #ffffff;
+       width:100%;
+       max-width: 1200px;
+       margin: 0 auto;
+       border-radius:3px;
+    }
+
+    .centralcolumninner
+    {
+       color:Black;	
+       width:100%;
+       margin: 10px auto;   
+       overflow:hidden;
+    }
+
+    .frontpagebubble
+    {
+        background-color: #e4ecef;
+        padding: 15px;
+        border-radius: 5px;
+        width:90%;
+    }
+}

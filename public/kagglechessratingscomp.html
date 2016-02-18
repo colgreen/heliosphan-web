@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Kaggle Chess Ratings Competition</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen"/>
+    <!-- Google Analytics -->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-64605921-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+      <div class="articlebodyinner">
+        <br/>
+        <h1 align="center">Kaggle Chess Ratings Competition</h1>
+        <h4 align="center">Colin Green, 2010</h4>
+        <br />
+        <br />
+        <a href="http://www.kaggle.com/chess">Chess ratings - Elo versus the Rest of the World</a> - This competition aims
+        to discover whether other approaches can predict the outcome of chess games more accurately than the workhorse Elo
+        rating system.
+        <br />
+        <br />
+        <h3>Data Set</h3>
+        65,053 rows of data of the form:
+        <table border="1" cellpadding="2" cellspacing="0">
+          <tr>
+            <td>
+              <b>Month #</b>
+            </td>
+            <td>
+              <b>White Player #</b>
+            </td>
+            <td>
+              <b>Black Player #</b>
+            </td>
+            <td>
+              <b>Score</b>
+            </td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>73</td>
+            <td>1246</td>
+            <td>0.5</td>
+          </tr>
+        </table>
+        Score is 1 if white wins, 0 if black wins, 0.5 indicates a draw.<br/>
+        There are 8631 players and the month value ranges from 1 to 105, hence there is some scope for modelling player's
+        changing skill level.
+        <br />
+        <br />
+        <h3>Challenge</h3>
+        Predict outcomes for games for which no score has been revealed, the games to be predicted occured after the period
+        represented by the training data. The primary goal of the organisers was to find a chess player rating system better
+        than the existing ELO rating system.
+        <br />
+        <br />
+        <h3>Approach</h3>
+        In a nutshell, I define each player as having a rating value. The probability of player A beating player B is simply
+        A's rating minus B's rating. From there I use a gradient descent update rule to find the optimal ratings. Details as
+        follows...
+        <br/>
+        <br/>
+        <b>1)</b> Each player (P) has a rating initialised to zero (Rp).
+        <br/>
+        <br/>
+        <b>2)</b> Probability of player A winning against player B is defined as  W(A) = Ra - Rb. Any resulting probabilities
+        outside the range [0,1] are simply truncated to [0,1]
+        <br/>
+        <br/>
+        <b>3)</b> Iterate over all training games and<br/><br/>
+        &nbsp;&nbsp;&nbsp;<b>3.1)</b> Calculate the prediction and sqaure it.<br/><br/>
+        &nbsp;&nbsp;&nbsp;<b>3.2)</b> Calculate the squared error's rate of change (gradient) with respect to A's rating and also to B's rating.<br/><br/>
+        &nbsp;&nbsp;&nbsp;<b>3.3)</b> Update each player's rating using the gradient from 3.2 and a learning rate (a wide range of values work well, but 0.01 works well)<br/><br/>
+        &nbsp;&nbsp;&nbsp;<b>3.4)</b> Keep iterating until some probe RMSE figure stops falling (where probe RMSE is the RMSE calculated on a set of games that aren't being trained with)<br/>
+        <br/>
+        <br/>
+        <b>4)</b> To create a submission I do all of the above but use *all* of the available training data (no probe set). The number
+        of iterations is now fixed at the number of iterations recorded during a previous run that used a probe set (I recorded
+        when the error on the probe set stopped falling)
+        <br/>
+        <br/>
+        Some degree of tweaking was necessary to make this competitive. Most notably:
+        <br/>
+        <br/>
+        <b>5)</b> W(A) = (Ra - Rb) * 0.04&nbsp;&nbsp;&nbsp;(found experimentally)
+        <br/>
+        <br/>
+        <b>6)</b> Game score (0, 0.5 or 1.0) used for error calculation is modified such that:<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;better_score = (score - trainMeanScore) * 0.43) + trainMeanScore&nbsp;&nbsp;&nbsp;(found experimentally)
+        <br/>
+        <br/>
+        <b>7)</b> Regularization. I tried decaying ratings towards zero but this didn't work. Oddly regularizing /away/ from zero
+        did. One possible  hypothesis is that the 'reverse' regularization is helping the player ratings ditribution towards its
+        true shape, and that that shape has a long tailed distribution. Regularization factor is 0.005 (although this gets the
+        learning rate applied on top of it, thus it's really 0.0005).
+        <br/>
+        <br/>
+        <b>8)</b> Anomaly. If I run the model and plot prediction error (Y-axis) versus player rating (X-axis), then I get a straight
+        diagonal line. Predictions for low rated players are typically too high and vice versa. You might expect this to be a result
+        of the 'reverse' regularization, but it appears to be a deeper feature of the data/model. The obvious (but dumb/wrong) way to
+        compensate for this is to directly modify player ratings, this doesn't work because a given player generally plays against
+        players of a similar rating, thus two competing players both get adjusted in the same direction and the anomaly remains.
+        Adjusting by prediction error squared, i.e. stretching out the distribution of player ratings didn't work either.<br/>
+        <br/>
+        The method that worked was to create a 3D/surface plot of player A rating (X) versus player B rating (Y) versus prediction
+        error (Z). I then directly adjust player ratings at each game based on this plot.
+        <br/>
+        <br/>
+        <b>9)</b> Time. Adding in a linear 'slope' over time to each player's rating resulted in no improvement in predictive ability
+        whatsoever. However, training against the most recent half of the data did make an improvment. Thus it seems there may be some
+        change in ratings over time that is non-linear. Whether it can be modelled without overfitting (too many variables!) is debatable;
+        Given the relatively small improvement from using the most recent 50% of training data I would guess not.
+        <br/>
+        <br/>
+        <h3>Results</h3>
+        <p>
+          All of the above ultimately got me to 10th position on the <a href="http://www.kaggle.com/c/chess/Leaderboard">final leaderboard</a>
+          with an RMSE score of 0.70018 (lower is better), very closely behind the winning score of 0.69477. Also a number of interesting
+          developments were made public on the forums after I had carried out the above work, so I possibly could have improved this score further.
+          Possibly the most beneficial change would have been to use a probe data set that more accurately represented the set being used to score
+          competition submissions - I used a random scattering of games across the whole data set while others observed better results using a
+          probe set made up from the most recent games.
+        </p>
+        <p>
+          Also the final reported position is somewhat better than my position on the leaderboard in the final weeks of the competition where
+          I had slipped down to approx 23rd place after making my final submission sometime earlier. The final scores were based on a broader data
+          set and this seems to have significantly altered the final standings, boosting my entry (entries?) up to 12th place. (My high water mark
+          was a brief stint at 4th place). The noise in the scoring system is a problem inherent to small data sets.
+        </p>
+        <br/>
+        <hr/>
+        <div style="margin-left:10;">
+          <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" />
+          Copyright 2010, 2011 Colin Green.<br/>
+          This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+            Creative Commons
+            Attribution 3.0 License
+          </a>
+          <br/>
+          <br/>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

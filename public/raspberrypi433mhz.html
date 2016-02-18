@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>433MHz Radio Modules</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen"/>
+    <!-- Google Analytics -->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-64605921-1', 'auto');
+        ga('send', 'pageview');
+    </script>
+  </head>
+  <body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+      <div class="articlebodyinner">
+        <br/>
+        <h1 align="center">433MHz Radio Modules</h1>
+        <br />
+
+<p>
+I wanted to get some outside temperature readings logged to my raspberry pi for plotting charts, e.g. one thing I'd like to do is
+monitor both the internal and external temperatures to help arriving at an estimate for building heat loss over the year.</p>
+
+<p>One option is one wire thermometers, such as the widely availabe DS18b20. I have some of those and they are indeed easy to get working.
+However I don't really want to be drilling holes through walls, etc. So I looked into radio based options.</p>
+
+<p>One option here is to buy an off-the-shelf weather station, I opted for the <a href="http://www.amazon.co.uk/gp/product/B00D1WUKOK">ClimeMET CM9088 Digital Wireless Weather Station</a>. 
+For £35 I received a master station with a good sized LCD display showing all salient info, and a remote module. The remote module is
+fairly compact, looks mostly weather proof and has a small LCD display showing temperature and humidity at the unit; It takes a couple of
+AAA batteries and it's claimed those will last 24 months. The unit periodically transmits temperature and humidity somewhere around 433Mhz.</p>
+
+<p>I've mounted the remote unit outside in a location that is shaded and sheltered from rain. The master unit reports when it has received a 
+signal with a symbol on the LCD display (and of course the temp and humidity update), so I was able to walk around the house to check signal 
+range - basically there were no problems getting a signal anywhere, even across the garden and through several brick walls!</p>
+
+<p>The next step was to try an understand the modulation being used and to find a suitable receiver module that I could link to a raspberry pi.
+Google came up with some useful links, but the main thing to note is that the data is modulated using on-off keying (OOK). A useful test to do 
+at this point is to use an SDR (Software Define Radio) USB dongle to tune in to the signal. I have a 
+<a href="http://www.amazon.co.uk/gp/product/B00P2UOU72">NooElec NESDR Mini 2 USB RTL-SDR & ADS-B Receiver Set, RTL2832U & R820T2 Tuner</a>. I'm
+using a Windows 7 PC so I was able to download <a href="http://sdrsharp.com/#sdrsharp">SDR#</a> to listen in. The signal arrives as a short single
+burst every 48 seconds, a burst lasts about 100ms</p>
+
+<p>SDR# allows recording of audio, however we must choose an appropriate modulation scheme for the receiver. Here's the audio we get when the 
+receiver is set to AM modulation:</p>
+
+<img src="raspberrypi433mhz/climemet_433mhz_am.png" />
+
+
+<p>It's perhaps not immediately obvious what is going on, but the highs correspond to the 'On' state, and the lows the 'Off' state. The 'offs' appear
+to be below the mid line, but that's an effect in the receiver circurty (and/or receiver software), given a short time the signal drifts back to the
+mid line as it does at the far right of the plot. The on/off nature of the signal is more obvious with the SDR modulation set to 'raw'. Here are the 
+first few data bits from another burst:</p>
+
+<img src="raspberrypi433mhz/climemet_433mhz_raw.png" />
+
+<p>Note how there are two different durations of 'On' signals, a short 'On' lasting about 0.5ms, and a long 'On' lasting about 1.5ms. This is because
+the ClimeMEt unit is using 'On' duration to differentiate between a binary 0 and a 1. By comparing the patterns of long and short bursts with the reported
+corresponding temperature and relative humidity I was quickly able find where the temperature and RH values are encoded and which way around the binary 
+0's and 1's are encoded. short=1 and long=0. So the bit sequence for the for plot #1 is:</p>
+<br />
+
+<table>
+<tr><td>nibble index:</td><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr>
+<tr><td>nibble bits:</td><td>1111</td><td>1111</td><td>0100</td><td>1111</td><td>0001</td><td>0000</td><td>1101</td><td>1000</td><td>0011</td><td>1101</td><td>1011</td><td>0000</td></tr>
+</table>
+
+<p>In total there are 48 bits, which I've broken into 12 groups of 4 bits (12 nibbles). Recall that this sequence corresponded to a temperature of 21.6C and RH of 61%.
+These appear to be trivially encoded,
+<br/>
+nibbles 6 & 7 = 11011000 = 216 decimal. So the temp appears to be integer encoded as 10ths of a degree celsius. <br/>
+nibbles 8 & 9 = 00111101 = 61 decimal.
+<br />
+<br />
+The leading bits are likely just fixed preamble that are used to determine that there is a valid signal. In the manual 
+there is also mention of some kind of ID that is learned when the units are first switch on, I didn't really understand but I think the
+remote unit generates a new ID each time it's powered on and the master unit learns the first ID it receives, so if your neighbour were to 
+set up a second remote unit your mast erunit would ignore your neighbour's - that's partly speculation, but the point is that I think there's
+an ID in there somewhere. The trailing 8 bits (nibbles 10 and 11) seem to change so are likely some kind of checksum. A checksum is quite 
+important to allow noise signals to be discarded, otherwise the master unit might report some weird numbers when the signal is weak or 
+there is interference.</p>
+
+
+
+
+
+
+
+
+
+        <br/>
+        <br/>
+        <br/>
+        <hr/>
+        <div style="margin-left:10;">
+          <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" />
+          2011 Colin Green.<br/>
+          This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+            Creative Commons
+            Attribution 3.0 License
+          </a>
+          <br/>
+          <br/>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
