@@ -1,0 +1,165 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Bayes Theorem - Explained with Counting</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.75" />
+  <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>
+  <link rel="stylesheet" href="stuff.css" type="text/css" media="screen" />
+</head>
+
+<body>
+  <div class="bannercolumn">
+    <a href="index.html">
+      <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+    </a>
+  </div>
+  <div class="articlebodyouter">
+    <div class="articlebodyinner">
+      <br/>
+      <h1 align="center">Bayes Theorem</h1>
+      <h3 align="center">Counting Derivation</h3>
+      <br />
+
+      <b>Drawing Balls from a Bag</b>
+      <p>There is a bag with four wooden balls in it. To 'sample' from the bag we jumble up the contents, reach in, and take
+        out one of the balls. After observing the ball we put it back into the bag (sampling with replacement) so that we
+        can continue taking samples ad infinitum.
+      </p>
+      <p>The balls have two distinguishing attributes, their colour and the presence or absence of a spot; the attributes are
+        arranged like so:</p>
+      <table border="1" cellpadding="4" align="center">
+        <tr>
+          <th></th>
+          <th>Colour</th>
+          <th>Has Spot</th>
+        </tr>
+        <tr>
+          <th>Ball 1</th>
+          <td>Red</td>
+          <td>N</td>
+        </tr>
+        <tr>
+          <th>Ball 2</th>
+          <td>Red</td>
+          <td>N</td>
+        </tr>
+        <tr>
+          <th>Ball 3</th>
+          <td>Red</td>
+          <td>Y</td>
+        </tr>
+        <tr>
+          <th>ball 4</th>
+          <td>Blue</td>
+          <td>Y</td>
+        </tr>
+      </table>
+      <br/>
+      <p>Three balls are red, one is blue.</p>
+      <p>Two balls have a spot, two don't.</p>
+      <br/>
+
+      <b>Some Elementary Probability Calculations</b>
+
+      <p>At this point we can calculate some simple probabilities. There are four balls and no way to tell them apart or cheat,
+        so the probability of drawing any one ball is the same as for any other ball, and is always 1/4 = 25% = 0.25. We
+        can write this as:</p>
+
+      <p>$${P}(ball1) = {P}(ball2) = {P}(ball3) = {P}(ball4) = \frac{1}{count(all)} = \frac{1}{4} = 0.25 $$</p>
+      <br/>
+      <p>Half of the balls have a spot, so the probability of drawing a ball with a spot is 50%; we write this as:</p>
+
+      <p>$${P}(spot) = \frac{count(spot)}{count(all)} = \frac{2}{4} = 0.5$$</p>
+      <br/>
+
+      <p>We do the same again with the ball colour:</p>
+
+      <p>$${P}(red) = \frac{count(red)}{count(all)} = \frac{3}{4} = 0.75 \tag{1}$$</p>
+      <br/>
+      <p>$${P}(blue) = \frac{count(blue)}{count(all)} = \frac{1}{4} = 0.25 $$</p>
+      <br/>
+
+      <p>Since a ball must be red or blue, and cannot be both red and blue, we can also state:</p>
+      <p>$$ {P}(red) + {P}(blue) = 1 $$</p>
+      <p>Or equivalently:</p>
+      <p>$$ {P}(red) = 1 - {P}(blue)$$</p>
+      <p>$$ {P}(blue) = 1 - {P}(red)$$</p>
+      <br/>
+      <p>We can also ask - what is the probability of drawing a red ball with a spot? Again, we just count the number of balls
+        that meet our test condition and divide by the total number of balls:</p>
+      <p>$$ {P}(red, spot) = \frac{count(red \ and\ spot)}{count(all)} = \frac{1}{4} = 0.25 \tag{2}$$</p>
+      <p>And so on.</p>
+      <br/>
+
+      <b>Conditional Probabilities</b>
+
+      <p>A conditional probability is just the probability of some thing given that we already know something else. E.g. A friend
+        draws a ball without showing it to us and tells us it is red; what is the probability of it having a spot?</p>
+
+      <p>We know there are three red balls, one of which has a spot, so:</p>
+
+      <p>$$ P(spot | red) = \frac{count(red \ and\ spot)}{count(red)} = \frac{1}{3} = 0.3\overline{3} \tag{3} $$</p>
+      <br/>
+      <p>Note that the denominator is now three, not four as before. We know that a red ball was drawn, and there are only three
+        of them, i.e. we eliminated the blue ball from our set of possibilties
+      </p>
+      <br/>
+
+
+      <b>Bayes</b>
+
+      <p>Equation 3 has two counts on the right hand side that also occured in equations 1 and 2, in fact if we divide equation
+        2 by equaion 1 we get:</p>
+
+
+      <p>$$ \frac{P(red, spot)}{P(red)} = \frac{count(red \ and\ spot)}{count(red)} $$</p>
+      <br/>
+      <p>Note that the side of the equation with counts in also appears in equation 3, therefore we can write:</p>
+
+      <p>$$ \frac{P(red, spot)}{P(red)} = P(spot | red) \tag{4}$$</p>
+      <br/>
+
+      <p>This pretty much captures Bayes Theroem but it's not quite the full Bayes rule in its commonly stated form; we need
+        to apply one further rule:</p>
+
+      <p>$$ P(red, spot) = P(spot, red) \tag{5}$$</p>
+      <br/>
+
+      <p>Here we're just saying that the probability of drawing a ball that is both red and has a spot, is the same as drawing
+        one that has a spot and is red; it's so obvious you might think why even mention it? Because, if we go through all
+        of the above derivation with the 'red' and 'spot' terms swapped then we end up with this alternative version of equation
+        4:</p>
+
+      <p>$$ \frac{P(spot, red)}{P(spot)} = P(red | spot) \tag{6}$$</p>
+      <br/>
+
+      <p>Combining equations 4, 5 and 6, we can rearrange to get:</p>
+
+      <p>$$ \frac{P(spot | red)}{P(red)} = \frac{P(red | spot)}{P(spot)} \tag{Bayes' Rule} $$</p>
+      <br/>
+      <p>That is the easy to remember 'balanced' form; to get to the commonly stated form just rearrange like so:</p>
+      <p>$$ P(spot | red) = \frac{P(red | spot)P(red)}{P(spot)} \tag{Bayes' Rule}$$</p>
+      <br/>
+
+      <p>(I'm open to suggestions towards improving the clarity of the above)</p>
+
+      <em>Colin, 2016-08-17</em>
+      <br/>
+      <br/>
+      <hr/>
+      <div style="margin-left:10;">
+        <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> 2016 Colin Green.<br/> This
+        article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+            Creative Commons
+            Attribution 3.0 License
+          </a>
+        <br/>
+        <br/>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

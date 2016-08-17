@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Gradient of Auto-Normalized Probability Distributions (Notes and Annotations)</title>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75" />
     <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
       tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
@@ -11,19 +12,8 @@
     </script>
     <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>
     <link rel="stylesheet" href="stuff.css" type="text/css" media="screen" />
-    <!-- Google Analytics -->
-    <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
-                (i[r].q = i[r].q || []).push(arguments)
-            }, i[r].l = 1 * new Date(); a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-        ga('create', 'UA-64605921-1', 'auto');
-        ga('send', 'pageview');
-    </script>
 </head>
+
 <body>
     <div class="bannercolumn">
         <a href="index.html">
@@ -33,52 +23,55 @@
     <div class="articlebodyouter">
         <div class="articlebodyinner">
             <br />
-            <h1 align="center">Gradient of Auto-Normalized Probability Distributions<br />
-                (Notes and Annotations)</h1>
-            <h4 align="center">Colin Green, June 2015</h4>
+            <h1 align="center">Gradient of Auto-Normalized Probability Distributions<br /> (Notes and Annotations)</h1>
+
             <br />
             <p>
                 There follows a series of notes and annotations to
-        <a href="http://sifter.org/~simon/journal/20150603.html">Gradient of Auto-Normalized Probability Distributions</a>
+                <a href="http://sifter.org/~simon/journal/20150603.html">Gradient of Auto-Normalized Probability Distributions</a>
             </p>
-            <h2>Overview</h2>
+            <br/>
+            <b>Overview</b>
             <p>
-                The bigger picture here is that we have a network of nodes where the nodes are grouped into distinct variables. The nodes 
-           within a variable determine the number of possible discrete states that a variable can take, and a given node activation level indicates
-           that node's probability of being the chosen state for its owning group (chosen stochastically). This is all in the 
-           spirit/context of <a href="http://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection</a> and 'furf' networks 
-           (furf is just shorthad for FUsion-ReFlection).
-            </p>
-            <p>
-                Incoming connections to a node (and the connection weights) serve to define that node's activation level and thus its 
-           probability of being 'chosen' (being the selected state for the variable). There is a problem therefore around how to ensure
-           that the activation levels sum to 1.0 (are properly normalised) when propagating signals through a network, and in turn the nature
-           of the weight update rule(s) - should we (or indeed can we) define an update rule that ensures that activation levels are 'pre- 
-           normalised' by a clever choice of weights? Or should we 'post-normalise' the activation levels?
+                The bigger picture here is that we have a network of nodes where the nodes are grouped into distinct variables. The nodes
+                within a variable determine the number of possible discrete states that a variable can take, and a given
+                node activation level indicates that node's probability of being the chosen state for its owning group (chosen
+                stochastically). This is all in the spirit/context of <a href="http://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection</a>                and 'furf' networks (furf is just shorthad for FUsion-ReFlection).
             </p>
             <p>
-                <a href="http://sifter.org/~simon/journal/20150603.html">Gradient of Auto-Normalized Probability Distributions</a> is working on 
-           the basis that the activation levels are not naturally normalised and must therefore be post-normalised before stochastically selecting 
-           a state/node within a group. As such we arrive at equation (1) (I will refer to the equation numbers used in the source article, 
-           and will annotate those equations with intermediate steps/equations numbered accordingly).
+                Incoming connections to a node (and the connection weights) serve to define that node's activation level and thus its probability
+                of being 'chosen' (being the selected state for the variable). There is a problem therefore around how to
+                ensure that the activation levels sum to 1.0 (are properly normalised) when propagating signals through a
+                network, and in turn the nature of the weight update rule(s) - should we (or indeed can we) define an update
+                rule that ensures that activation levels are 'pre- normalised' by a clever choice of weights? Or should we
+                'post-normalise' the activation levels?
             </p>
-
-            <h2>Annotations</h2>
-            <p>Note. Written content from the original/source document will be shown indented and in <i>italic</i>. My words are in regular font.</p>
+            <p>
+                <a href="http://sifter.org/~simon/journal/20150603.html">Gradient of Auto-Normalized Probability Distributions</a>                is working on the basis that the activation levels are not naturally normalised and must therefore be post-normalised
+                before stochastically selecting a state/node within a group. As such we arrive at equation (1) (I will refer
+                to the equation numbers used in the source article, and will annotate those equations with intermediate steps/equations
+                numbered accordingly).
+            </p>
+            <br/>
+            <b>Annotations</b>
+            <p>Note. Written content from the original/source document will be shown indented and in <i>italic</i>. My words
+                are in regular font.</p>
             <br />
             <blockquote><i>Consider a model which is an auto-normalized probability distribution over the states of a discrete variable D:</i></blockquote>
 
-            <p>$$\mathbf{P}(D_k) \equiv  \frac{F_k}{\sum_m F_m}\tag{1}$$</p>
+            <p>$$\mathbf{P}(D_k) \equiv \frac{F_k}{\sum_m F_m}\tag{1}$$</p>
 
             <blockquote><i>where each `F_k` is a scalar valued function of some (implicit) parameters.</i></blockquote>
             <br />
             <p>
-            So `F_k` here is the activation level for one node; It is being normalised by dividing by the sum of all node activation levels
-            within a group (hence `m` is just an arbitrarily chosen symbol, i.e. `m` has no relation to `k`). Hence each `F_k` is the result of combining 
-            input signals to a node in whatever way we choose to do that (the maths presented is agnostic of how that combining is done).
+                So `F_k` here is the activation level for one node; It is being normalised by dividing by the sum of all node activation
+                levels within a group (hence `m` is just an arbitrarily chosen symbol, i.e. `m` has no relation to `k`).
+                Hence each `F_k` is the result of combining input signals to a node in whatever way we choose to do that
+                (the maths presented is agnostic of how that combining is done).
             </p>
-            <p><b>N.B.</b>&nbsp;&nbsp;&nbsp;$\mathbf{P}(D_k)$ could be more formally written as $\mathbf{P}(D_k | M)$, where M is the model defined by the right hand 
-            side of the equation. However, to minimise visual clutter the conditional part is omitted throughtout the original document (and this one).</p>
+            <p><b>N.B.</b>&nbsp;&nbsp;&nbsp;$\mathbf{P}(D_k)$ could be more formally written as $\mathbf{P}(D_k | M)$, where
+                M is the model defined by the right hand side of the equation. However, to minimise visual clutter the conditional
+                part is omitted throughtout the original document (and this one).</p>
 
             <br />
             <blockquote><i>if `del_i` is the partial derivative with respect to some variable that only affects `F_i` then:</i></blockquote>
@@ -87,27 +80,26 @@
             <blockquote><i>where `del_i F_k = 0` when `i != k`.</i></blockquote>
             <br />
             <p>
-            There are a few things going on here. `del_i` is partial derivative notation, so `del_i f` would be read as "the rate of 
-            change of `f` with respect to `i`". In the source document `i` is used as shorthand to refer to some variable feeding into `F_i` 
-            (e.g. a signal being communicated to a node via a connection), hence `del_i` could perhaps be more formally written as `del_{v_i}`,
-            so we're just avoiding the extra visual clutter and the small hard to read 'double subscript' `i`.
+                There are a few things going on here. `del_i` is partial derivative notation, so `del_i f` would be read as "the rate of
+                change of `f` with respect to `i`". In the source document `i` is used as shorthand to refer to some variable
+                feeding into `F_i` (e.g. a signal being communicated to a node via a connection), hence `del_i` could perhaps
+                be more formally written as `del_{v_i}`, so we're just avoiding the extra visual clutter and the small hard
+                to read 'double subscript' `i`.
             </p>
 
             <p>There now follows a number of intermediate steps between equations (1) and (2).</p>
-            <p> 
-                \begin{align}
-                \log \mathbf{P}(D_k) & = \log \frac{F_k}{\sum_m F_m} \tag{1.1} \\\\
-                                     & = \log F_k - \log \sum_m F_m \tag{1.2} \\\\
-                \partial_i \log \mathbf{P}(D_k) & = \partial_i \log F_k -  \partial_i \log \sum_m F_m \tag{1.3} \\\\
-                                                & = \frac{\partial_i F_k}{F_k} - \frac{\partial_i \sum_m F_m}{\sum_m F_m} \tag{1.4} 
-                \end{align}
+            <p>
+                \begin{align} \log \mathbf{P}(D_k) & = \log \frac{F_k}{\sum_m F_m} \tag{1.1} \\\\ & = \log F_k - \log \sum_m F_m \tag{1.2}
+                \\\\ \partial_i \log \mathbf{P}(D_k) & = \partial_i \log F_k - \partial_i \log \sum_m F_m \tag{1.3} \\\\
+                & = \frac{\partial_i F_k}{F_k} - \frac{\partial_i \sum_m F_m}{\sum_m F_m} \tag{1.4} \end{align}
             </p>
             <br />
             <p>
-            Regarding the hop from (1.3) to (1.4), note that $\partial_x{log(x)} = 1/x$, that explains the denominator in both right hand side (RHS) terms in (1.4).
-            The numerator comes about by application of the chain rule; Taking the first RHS term as an example, we have $1/F_k$ which is the derivative
-            w.r.t $F_k$, but we wish to find the derivative w.r.t $i$, hence we multiply by the derivative of $F_k$ w.r.t $i$ which is written as $\partial_i F_k$.
-            This same process is applied to the second RHS term.
+                Regarding the hop from (1.3) to (1.4), note that $\partial_x{log(x)} = 1/x$, that explains the denominator in both right
+                hand side (RHS) terms in (1.4). The numerator comes about by application of the chain rule; Taking the first
+                RHS term as an example, we have $1/F_k$ which is the derivative w.r.t $F_k$, but we wish to find the derivative
+                w.r.t $i$, hence we multiply by the derivative of $F_k$ w.r.t $i$ which is written as $\partial_i F_k$. This
+                same process is applied to the second RHS term.
             </p>
             <p>We now note that $\partial_i{F_m} = 0$ when $i \neq m$, hence (1.4) simplifies to...</p>
 
@@ -122,38 +114,42 @@
 
             <blockquote><i>The log of which is the cross entropy:</i></blockquote>
 
-            <p>$$ \log \mathbf{P}(\bar{D}) = \sum_k [ \bar{\mathbf{P}}(\bar{D}_k) \log \mathbf{P}(D_k) ]   \tag{4}$$</p>
+            <p>$$ \log \mathbf{P}(\bar{D}) = \sum_k [ \bar{\mathbf{P}}(\bar{D}_k) \log \mathbf{P}(D_k) ] \tag{4}$$</p>
 
-            <p>Regarding $\bar{\mathbf{P}}(\bar{D}_k)$, $\bar{\mathbf{P}}$ is accessing the various (`k`) states of the observed distribution $\bar{D}$ to yield their 
-            observed probability (i.e. relative frequency). This could be more formally be written as just $\mathbf{P}(\bar{D}_k)$, i.e. the unconditional probability of
-            state $\bar{D}_k$. However, we've omitted the condition elsewhere to avoid visual clutter (see above note), hence we now need to emphasise that
-            there is no conditional part. In summary $\mathbf{P}(\bar{D})$ is shorthand for $\mathbf{P}(\bar{D} | M)$ (where $M$ is our model), i.e. the probability that 
-            our model will generate outputs with distribution $\bar{D}$. $\bar{\mathbf{P}}(\bar{D}_k)$ is a our customised notation for $\mathbf{P}(\bar{D}_k)$.
+            <p>Regarding $\bar{\mathbf{P}}(\bar{D}_k)$, $\bar{\mathbf{P}}$ is accessing the various (`k`) states of the observed
+                distribution $\bar{D}$ to yield their observed probability (i.e. relative frequency). This could be more
+                formally be written as just $\mathbf{P}(\bar{D}_k)$, i.e. the unconditional probability of state $\bar{D}_k$.
+                However, we've omitted the condition elsewhere to avoid visual clutter (see above note), hence we now need
+                to emphasise that there is no conditional part. In summary $\mathbf{P}(\bar{D})$ is shorthand for $\mathbf{P}(\bar{D}
+                | M)$ (where $M$ is our model), i.e. the probability that our model will generate outputs with distribution
+                $\bar{D}$. $\bar{\mathbf{P}}(\bar{D}_k)$ is a our customised notation for $\mathbf{P}(\bar{D}_k)$.
             </p>
-            <p>Note that equation (4) is indeed the formula for cross entropy, but without the minus sign that it is normally shown with. Generally we wish to minimise 
-            <a href="crossentropy.html">cross entropy</a> to find better models, so here we just need to note that the sign is flipped (we would want to <i>maximise</i> 
-            equation 4 as it is written).
+            <p>Note that equation (4) is indeed the formula for cross entropy, but without the minus sign that it is normally
+                shown with. Generally we wish to minimise
+                <a href="crossentropy.html">cross entropy</a> to find better models, so here we just need to note that the
+                sign is flipped (we would want to <i>maximise</i> equation 4 as it is written).
             </p>
             <br />
             <blockquote><i>Taking the partial derivative and pulling in `\partial_i \log \mathbf{P}(X_k)` from above:</i></blockquote>
             <p>
-                \begin{align}
-                \partial_i \log \mathbf{P}(\bar{D}) & = \sum_k{ \left[ \bar{\mathbf{P}}(\bar{D}_k) \partial_i \log \mathbf{P}(X_k) \right]} \tag{5.A} \\\\
-                                                    & = \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k) \left(\frac{\partial_i F_k}{F_k} - \frac{\partial_i F_i}{\sum_m F_m}\right) \right]} \tag{5.B} \\\\
-                                                    & = \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k) \frac{\partial_i F_k}{F_k} \right]} - \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k) \frac{\partial_i F_i}{\sum_m F_m} \right]}  \tag{5.C} \\\\
-                                                    & = \bar{\mathbf{P}}(\bar{D}_i) \frac{\partial_i F_i}{F_i} - \frac{\partial F_i}{\sum_m F_m} \tag{5.D} \\\\
-                                                    & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i) - \frac{F_i}{\sum_m F_m}\right] \tag{5.E} \\\\
-                                                    & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i) - \mathbf{P}(D_i) \right] \tag{5}
-                \end{align}
+                \begin{align} \partial_i \log \mathbf{P}(\bar{D}) & = \sum_k{ \left[ \bar{\mathbf{P}}(\bar{D}_k) \partial_i \log \mathbf{P}(X_k)
+                \right]} \tag{5.A} \\\\ & = \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k) \left(\frac{\partial_i F_k}{F_k} -
+                \frac{\partial_i F_i}{\sum_m F_m}\right) \right]} \tag{5.B} \\\\ & = \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k)
+                \frac{\partial_i F_k}{F_k} \right]} - \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k) \frac{\partial_i F_i}{\sum_m
+                F_m} \right]} \tag{5.C} \\\\ & = \bar{\mathbf{P}}(\bar{D}_i) \frac{\partial_i F_i}{F_i} - \frac{\partial
+                F_i}{\sum_m F_m} \tag{5.D} \\\\ & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i) - \frac{F_i}{\sum_m
+                F_m}\right] \tag{5.E} \\\\ & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i) - \mathbf{P}(D_i)
+                \right] \tag{5} \end{align}
             </p>
             <br />
-            <p>At (5.1) we take the derivative w.r.t. $i$ (actually $v_i$, see notes above). $\bar{\mathbf{P}}(\bar{D}_k)$ is a constant factor w.r.t. $i$, therefore that term can go outside of the partial dertivative for clarity.
+            <p>At (5.1) we take the derivative w.r.t. $i$ (actually $v_i$, see notes above). $\bar{\mathbf{P}}(\bar{D}_k)$ is
+                a constant factor w.r.t. $i$, therefore that term can go outside of the partial dertivative for clarity.
             </p>
             <p>At (5.2) we substitute in equation (2), and at (5.3) we simply multiply out the terms.
             </p>
-            <p>At (5.4) the sum over k in the left hand term has simplified because $\partial_i{F_k}$ is zero for all $k$ except when $k=i$.
-            In the right hand term we note that in (5.3) there was no $k$ in $\frac{\partial_i{F_i}}{\sum_m{F_m}}$, and since $\bar{\mathbf{P}}(\bar{D}_k)$ sums to one the entire term 
-            simplifies to $\frac{\partial_i{F_i}}{\sum_m{F_m}}$.
+            <p>At (5.4) the sum over k in the left hand term has simplified because $\partial_i{F_k}$ is zero for all $k$ except
+                when $k=i$. In the right hand term we note that in (5.3) there was no $k$ in $\frac{\partial_i{F_i}}{\sum_m{F_m}}$,
+                and since $\bar{\mathbf{P}}(\bar{D}_k)$ sums to one the entire term simplifies to $\frac{\partial_i{F_i}}{\sum_m{F_m}}$.
             </p>
             <p>At (5.5) $\partial_i{F_i}) / F_i$ is factored out from both terms.
             </p>
@@ -163,11 +159,9 @@
 
             <blockquote><i>In sum:</i></blockquote>
             <p>
-            \begin{align}
-            \mathbf{P}(D_k) & \equiv \frac{F_k}{\sum_m F_m}\tag{6.A} \\\\
-            \mathbf{P}(\bar{D}) & = \prod_k{ \mathbf{P}(D_k)^{\bar{\mathbf{P}}(\bar{D}_k)} } \tag{6.B} \\\\
-            \partial_i \log \mathbf{P}(\bar{D}) & =  \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i) - \mathbf{P}(D_i) \right] \tag{6.C}
-            \end{align}
+                \begin{align} \mathbf{P}(D_k) & \equiv \frac{F_k}{\sum_m F_m}\tag{6.A} \\\\ \mathbf{P}(\bar{D}) & = \prod_k{ \mathbf{P}(D_k)^{\bar{\mathbf{P}}(\bar{D}_k)}
+                } \tag{6.B} \\\\ \partial_i \log \mathbf{P}(\bar{D}) & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i)
+                - \mathbf{P}(D_i) \right] \tag{6.C} \end{align}
             </p>
 
             <blockquote><i>So, what's it mean and why is it interesting?</i></blockquote>
@@ -192,35 +186,40 @@
 
             $$ F_i = \prod_j{G_{j,i}} \tag{7}$$
 
-            <p>So this is e.g. where we have multiple input connections to a node and we choose to combine them by multiplying, in the spirit of treating 
-            the inputs as independent probabilities where the joint probability of independent events A and B is given by $P(A,B) = P(A) \cdot P(B)$
+            <p>So this is e.g. where we have multiple input connections to a node and we choose to combine them by multiplying,
+                in the spirit of treating the inputs as independent probabilities where the joint probability of independent
+                events A and B is given by $P(A,B) = P(A) \cdot P(B)$
             </p>
 
             <blockquote><i>Then:</i></blockquote>
 
-            <p>$$ \partial_{j,i}F_i = \frac{F_i}{G_{j,i}} \partial_{j,i}{G_{j_i}}  \tag{8} $$</p>
+            <p>$$ \partial_{j,i}F_i = \frac{F_i}{G_{j,i}} \partial_{j,i}{G_{j_i}} \tag{8} $$</p>
             <br />
 
-            <p>As above, I'm interpreting $\partial_{j,i}$ as shorthand for $\partial_{v_{j,i}}$, i.e. the partial derivative w.r.t. some variable that 
-            affects $G_{j,i}$ (although I'm not 100% sure about that interpretation). Intermediate steps leading up to equation (8)...</p>
+            <p>As above, I'm interpreting $\partial_{j,i}$ as shorthand for $\partial_{v_{j,i}}$, i.e. the partial derivative
+                w.r.t. some variable that affects $G_{j,i}$ (although I'm not 100% sure about that interpretation). Intermediate
+                steps leading up to equation (8)...</p>
 
             <p>First we take the partial derivative w.r.t. $v_{j,i}$ (using the chain rule).</p>
-            <p>$$ \partial_{j,i}F_i =  \partial_{G_{j,i}}{F_i} \cdot \partial_{j,i}G_{j,i} \tag{8.A} $$</p>
+            <p>$$ \partial_{j,i}F_i = \partial_{G_{j,i}}{F_i} \cdot \partial_{j,i}G_{j,i} \tag{8.A} $$</p>
 
-            <p><b>N.B.</b> Only the ${j,i}$th component remains from the product term in (7) because that's the only component that affects $v_{j,i}$.
-             We have then applied the chain rule around that remaining variable.</p>
+            <p><b>N.B.</b> Only the ${j,i}$th component remains from the product term in (7) because that's the only component
+                that affects $v_{j,i}$. We have then applied the chain rule around that remaining variable.</p>
 
-            <p>We now note that $\partial_{G_{j,i}}{F_i}$ is the product of all the the $G_{j,i}$ components apart from the current one we're
-            calculating the derivative for - because all of those other component are constant terms w.r.t. the rate of change we're computing. Hence...</p>
+            <p>We now note that $\partial_{G_{j,i}}{F_i}$ is the product of all the the $G_{j,i}$ components apart from the
+                current one we're calculating the derivative for - because all of those other component are constant terms
+                w.r.t. the rate of change we're computing. Hence...</p>
 
-            <p>$$ \partial_{j,i}F_i = \frac{F_i}{G_{j,i}} \partial_{j,i}{G_{j_i}}  \tag{8} $$</p>
+            <p>$$ \partial_{j,i}F_i = \frac{F_i}{G_{j,i}} \partial_{j,i}{G_{j_i}} \tag{8} $$</p>
             <br />
 
             <blockquote><i>Applying (5), note $F_i$ cancels out, so curiously we end up with essentially (5) again:</i></blockquote>
 
-            <p>$$ \partial_{j,i}{log{ \mathbf{P}(\bar{D})}} =  \frac{\partial_{j,i}G_{j,i}}{G_{j,i}} \left[\bar{\mathbf{P}}(\bar{D_i}) - \mathbf{P}(D_i)\right] \tag{9} $$</p>
+            <p>$$ \partial_{j,i}{log{ \mathbf{P}(\bar{D})}} = \frac{\partial_{j,i}G_{j,i}}{G_{j,i}} \left[\bar{\mathbf{P}}(\bar{D_i})
+                - \mathbf{P}(D_i)\right] \tag{9} $$</p>
 
-            <p>Here we've taken (5) and replaced the $\frac{\partial_i{F_i}}{F_i}$ term with equation (8). $F_i$ cancels out to give equation (9).</p>
+            <p>Here we've taken (5) and replaced the $\frac{\partial_i{F_i}}{F_i}$ term with equation (8). $F_i$ cancels out
+                to give equation (9).</p>
 
             <blockquote><i>The interesting point here being that even though many $G_j$s are being combined into the final predicted distribution, the "explaining away"
             competition amongst them is coordinated entirely via the consolidated $\mathbf{P}(Di)$ predictions (as expressed in the error residual). That is, other than the
@@ -230,22 +229,26 @@
             them all at once as opposed to one by one). There we are removing the net projection of the current vectors from the input before training. Here we are 
             removing the net prediction. This reverse inhibition is a recurring theme in various learning algorithms, including some brain-inspired ones.</i></blockquote>
             <br />
-            <p>Incremental SVD refers the matrix factorisation method whereby the side vectors are updated at each training data point. "when training
-            them all at once as opposed to one by one", refers to 'simultaneous' SVD, whereby instead of factoring one pair of side vectors at a time (thus extracting 
-            the next most prominent feature in the data), we actually factor out multiple factors (side vectors) simultaneously. This is benefical because in the serial
-            approach we can add the early vectors back into the error residuals (i.e. the remaining unexplained variance in the data) and re-learn them using the error 
-            residuals that have had later vectors extracted, this gives us a better set of early side vectors. In fact we can then go on to re-learn the later vectors,
-            and so on. The logical conclusion to this cycling through previously learned vectors, adding them back to the residuals and re-learning them, is that what we
-            really wanted to do all along was learn all of the side vectors at the same time, such that each pair of side vectors is responding to the learning going
-            on in all of the other pairs. This results in the structures in the data being teased out gradually, and the side vector pairs each naturally settle on a feature
-            to model that is orthoginal to all of the other features.
+            <p>Incremental SVD refers the matrix factorisation method whereby the side vectors are updated at each training
+                data point. "when training them all at once as opposed to one by one", refers to 'simultaneous' SVD, whereby
+                instead of factoring one pair of side vectors at a time (thus extracting the next most prominent feature
+                in the data), we actually factor out multiple factors (side vectors) simultaneously. This is benefical because
+                in the serial approach we can add the early vectors back into the error residuals (i.e. the remaining unexplained
+                variance in the data) and re-learn them using the error residuals that have had later vectors extracted,
+                this gives us a better set of early side vectors. In fact we can then go on to re-learn the later vectors,
+                and so on. The logical conclusion to this cycling through previously learned vectors, adding them back to
+                the residuals and re-learning them, is that what we really wanted to do all along was learn all of the side
+                vectors at the same time, such that each pair of side vectors is responding to the learning going on in all
+                of the other pairs. This results in the structures in the data being teased out gradually, and the side vector
+                pairs each naturally settle on a feature to model that is orthoginal to all of the other features.
             </p>
-
+            <br/>
+            <p>Colin, June 2015</p>
+            <br/>
             <hr />
             <div>
-                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" />
-                Copyright 2015 Colin Green.<br />
-                This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">Creative Commons
+                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2015 Colin
+                Green.<br /> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">Creative Commons
             Attribution 3.0 License
                 </a>
                 <br />
@@ -254,4 +257,5 @@
         </div>
     </div>
 </body>
+
 </html>
