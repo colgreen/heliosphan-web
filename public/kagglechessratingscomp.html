@@ -54,7 +54,7 @@
         changing skill level.</p>
         <br />
         <b>Challenge</b>
-        <p>Predict outcomes for games for which no score has been revealed, the games to be predicted occured after the period
+        <p>Predict outcomes for games for which no score has been revealed, the games to be predicted occurred after the period
         represented by the training data. The primary goal of the organisers was to find a chess player rating system better
         than the existing ELO rating system.</p>
         <br />
@@ -71,7 +71,7 @@
         <br/>
         <br/>
         <b>3)</b> Iterate over all training games and<br/><br/>
-        &nbsp;&nbsp;&nbsp;<b>3.1)</b> Calculate the prediction and sqaure it.<br/><br/>
+        &nbsp;&nbsp;&nbsp;<b>3.1)</b> Calculate the prediction and square it.<br/><br/>
         &nbsp;&nbsp;&nbsp;<b>3.2)</b> Calculate the squared error's rate of change (gradient) with respect to A's rating and also to B's rating.<br/><br/>
         &nbsp;&nbsp;&nbsp;<b>3.3)</b> Update each player's rating using the gradient from 3.2 and a learning rate (a wide range of values work well, but 0.01 works well)<br/><br/>
         &nbsp;&nbsp;&nbsp;<b>3.4)</b> Keep iterating until some probe RMSE figure stops falling (where probe RMSE is the RMSE calculated on a set of games that aren't being trained with)<br/>
@@ -90,7 +90,7 @@
         <br/>
         <br/>
         <b>7)</b> Regularization. I tried decaying ratings towards zero but this didn't work. Oddly regularizing <em>away</em> from zero
-        did. One possible  hypothesis is that the 'reverse' regularization is helping the player ratings ditribution towards its
+        did. One possible  hypothesis is that the 'reverse' regularization is helping the player ratings distribution towards its
         true shape, and that that shape has a long tailed distribution. Regularization factor is 0.005 (although this gets the
         learning rate applied on top of it, thus it's really 0.0005).
         <br/>
@@ -107,8 +107,8 @@
         <br/>
         <br/>
         <b>9)</b> Time. Adding in a linear 'slope' over time to each player's rating resulted in no improvement in predictive ability
-        whatsoever. However, training against the most recent half of the data did make an improvment. Thus it seems there may be some
-        change in ratings over time that is non-linear. Whether it can be modelled without overfitting (too many variables!) is debatable;
+        whatsoever. However, training against the most recent half of the data did make an improvement. Thus it seems there may be some
+        change in ratings over time that is non-linear. Whether it can be modelled without over-fitting (too many variables!) is debatable;
         Given the relatively small improvement from using the most recent 50% of training data I would guess not.
         <br/>
         <br/>
