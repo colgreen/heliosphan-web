@@ -28,7 +28,7 @@
       </p>
       <p>The balls have two distinguishing attributes, their colour and the presence or absence of a spot; the attributes are
         arranged like so:</p>
-      <table border="1"  cellspacing="0" cellpadding="5" align="center">
+      <table border="1" cellspacing="0" cellpadding="5" align="center">
         <tr>
           <th></th>
           <th>Colour</th>
@@ -111,14 +111,19 @@
 
       <b>Bayes</b>
 
-      <p>Equation 3 has `N_{red and spot}` and `N_{red}` on the right hand side, and these two variables are also present in equations 1
-         and 2 respectively. In fact if we divide equation 2 by equation 1 we get:</p>
-
+      <p>Equation 3 has `N_{red and spot}` and `N_{red}` on the right hand side, and these two variables are also present in
+        equations 1 and 2 respectively. In fact if we divide equation 2 by equation 1 we get:</p>
 
       <p>$$ \frac{P(red, spot)}{P(red)} = \frac{N_{red \ and \ spot}}{N_{red}} \tag{4}$$</p>
+      <p>I.e. we have two conditions and we count how many balls meet each condition:</p>
+      <ol>
+        <li>The number of balls that are red and have a spot => `N_{red and spot}`</li>
+        <li>The number of balls that are red => `N_{red}`</li>
+      </ol>
+      <p>Equation 4 is just saying that the ratio of the two probabilities is equal to the ratio of those two counts.</p>
       <br/>
 
-      <p>Recalling that `\frac{N_{red and spot}}{N_{red}}` occurred in equation 3; therefore we can write:</p>
+      <p>Recalling that `\frac{N_{red and spot}}{N_{red}}` occurred in equation 3; we can now write:</p>
 
       <p>$$ \frac{P(red, spot)}{P(red)} = P(spot | red) \tag{5}$$</p>
       <br/>
@@ -131,34 +136,35 @@
 
       <p>Here we're just saying that the probability of drawing a ball that is both red and has a spot, is the same as drawing
         one that has a spot and is red; it's so obvious you might think why even mention it? Because, if we go through all
-        of the above derivation with the 'red' and 'spot' terms swapped then we end up with equation 5 with the two terms having swapped places:
+        of the above derivation with the 'red' and 'spot' terms swapped then we end up with something that looks like equation
+        5, but with the two terms having swapped places:
 
-      <p>$$ \frac{P(spot, red)}{P(spot)} = P(red | spot) \tag{7}$$</p>
-      <br/>
+        <p>$$ \frac{P(spot, red)}{P(spot)} = P(red | spot) \tag{7}$$</p>
+        <br/>
 
-      <p>Combining equations 5, 6 and 7, we can rearrange to get:</p>
+        <p>Combining equations 5, 6 and 7, we can rearrange to get:</p>
 
-      <p>$$ P(spot | red) P(red) = P(red | spot) P(spot) \tag{Bayes' Rule} $$</p>
-      <br/>
-      <p>That is the easier to remember 'balanced' form; to get to the commonly stated form just rearrange like so:</p>
-      <p>$$ P(spot | red) = \frac{P(red | spot)P(spot)}{P(red)} \tag{Bayes' Rule}$$</p>
-      <br/>
+        <p>$$ P(spot | red) P(red) = P(red | spot) P(spot) \tag{Bayes' Rule} $$</p>
+        <br/>
+        <p>That is the easier to remember 'balanced' form. To get the commonly stated form just divide both sides by `P(red)`:</p>
+        <p>$$ P(spot | red) = \frac{P(red | spot)P(spot)}{P(red)} \tag{Bayes' Rule}$$</p>
+        <br/>
 
-      <p>(I'm open to suggestions towards improving the clarity of the above)</p>
+        <p>(I'm open to suggestions towards improving the clarity of the above)</p>
 
-      <em>Colin, 2016-08-17</em>
-      <br/>
-      <br/>
-      <hr/>
-      <div style="margin-left:10;">
-        <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> 2016 Colin Green.<br/> This
-        article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+        <em>Colin, 2016-08-17</em>
+        <br/>
+        <br/>
+        <hr/>
+        <div style="margin-left:10;">
+          <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> 2016 Colin Green.<br/> This
+          article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
             Creative Commons
             Attribution 3.0 License
           </a>
-        <br/>
-        <br/>
-      </div>
+          <br/>
+          <br/>
+        </div>
     </div>
   </div>
 </body>
