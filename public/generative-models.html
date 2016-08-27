@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Generative Models</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75" />
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+    });
+    </script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen" />
+</head>
+
+<body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+        <div class="articlebodyinner">
+            <br />
+            <h1 align="center">Generative Models</h1>
+            <br />
+            <p>
+                Consider a very simple generative model consisting of a single variable B representing the probability of a biased coin toss landing heads up.
+                We are given a data set consisting of a sequence of actual coin flips and we are tasked with fitting the model to the data, i.e. finding 
+                the value of B that best represents the data (or more specifically - that best represents the system from which the data was sampled).
+            </p>
+            <p>
+                Let's start with a simple data set of H-H-T-H. We observe that 75% of the outcomes are heads, and therefore
+                conclude that the optimal value for B is 0.75. Stated formally:
+            </p>
+            <p>$$B = \frac{N_{heads}}{N_{heads} + N_{tails}} \tag{1}$$</p>
+            <p>I.e. we set B to the proportion of total flips that are heads.</p>
+
+            <p><em>Note. This estimate based on a simple ratio isn't quite right, however its error decreases as the number of samples (coin flips) in the data set increases.</em></p>
+            <p>
+                If we now run our model in generative mode (i.e. take random samples from it) we observe that approximately 75% of the tosses are heads as per the 
+                real coin, i.e. the distribution of our model matches that of the system it is modeling. So far, so good.
+            </p>
+            <br/>
+            <b>Big Models</b>
+            <p>
+                Unfortunately our coin flip model with a single variable isn't very useful. If we wish to model large datasets of images, audio, text, etc. and the complex
+                hierarchy of structures inherent to those types of data (e.g. understanding that some subset of pixels in an image represent a kitten, another subset represent
+                a ball of string, and the kitten and string are often observed together in the data set as a whole) then we need a lot more model variables. Contemporary models may contain 100s of millions
+                or even billions of variables, and there is no simple mathematical expression (such as our equation 1) that will give us the optimal value for each of them. In such
+                cases the go-to method is that of gradient following (most commonly referred to as <a href="https://en.wikipedia.org/wiki/Gradient_descent">Gradient Descent</a>).
+            </p>
+            <br/>
+            <b>Gradient Descent</b>
+            <p>
+                The basic idea is that we have some means of measuring the quality of a given model with respect to some goal, i.e. what we want
+                the model to do. Using such a quality metric we can determine, for any given single model parameter, how the model quality changes with 
+                small changes to that parameter. We can then make lots of tiny incremental updates to the each of the millions of parameters and
+                slowly 'nudge' the model towards the desired goal. It turns out this approach can work very well, although caveats apply. 
+            </p>
+            <p>
+                In short, we calculate the gradient (i.e. the first order derivative) of the quality metric with respect to a parameter and follow 
+                the gradient in tiny steps. That is, rather than the equation 1 approach of jumping directly to the know optimal value, instead we move
+                incrementally in a direction towards where we think the optimal value will be, noting that each variable is being updated simultaneously 
+                with millions of others, therefore our gradient estimate for each variable is changing as all of those other variables change.  
+            </p>
+
+            <br/>
+            <b>Supervised Models</b>
+            <p>
+                 In <a href="https://en.wikipedia.org/wiki/Supervised_learning">Supervised Learning</a> a model will typically produce 
+                an output vector for a given input vector, and the training data is in the form of input-output pairs. In that world there's a natural choice
+                of quality, i.e. how close each produced output vector is to the desired (target) output vector. The error at the outputs is a simple pointwise 
+                subtraction of the target vector from the produced vector, it's then necessary to communicate that error back through the model in order to 
+                calculate the error gradient at each variable. As we go further back into layers of the model the error signal can become greatly diminished and noisy, 
+                and this has been a long running issue and focus of research (see <a href="https://en.wikipedia.org/wiki/Backpropagation">backpropagation</a>).
+            </p>
+            <p>
+                The need for target vectors also causes problems, e.g. for the inputs we might have a set of raw images, and for the corresponding outputs we might 
+                have a series of labels of things (i.e. binary categories) for each image (a ball of string, a kitten...).
+                The choice of labels will typically be somewhat artificial in that they're defined by people and what they think the relevant features are in each image,
+                and the choice of labels may not be fully representative of everything 'going on' in an image that is relevant to the model we wish to build,
+                after all a picture is worth a thousand words.
+            </p>             
+            <p>
+                E.g. if we wanted a general purpose image recognition model then we want to model <b>everything</b> in an image - the fluffiness of the cat,
+                the texture of the carpet, the subtle change in light tone across the room, the wound fibres that make up the string, the relative positions 
+                of the cat and the ball of string, the angle a ray of sunlight makes across a wall, the shadow vast by a vase on the windowsill ... and so on.
+            </p>
+            <p>
+                Another problem with image labels in particular is that ideally we would be localising them, so <em>this</em> subset of pixels represent the cat, rather than
+                <em>there's a cat somewhere in this image</em>, let's get the model figure out where. Images are typically (currently) modeled by convolutional nets, i.e. 
+                an image is broken down into sub-regions (usually overlapping square regions), and ideally we would be assigning our 'cat' label to the correct regions. 
+                So the problem of producing good labels is not just the choice of labels, but also which regions of an image they apply to. In non-image data sets the same 
+                problem generally applies (label localisation), i.e. this problem is not specific to image data.     
+            </p>
+            <br/>
+            <b>Generative Models</b>
+            <p>
+                In contrast to supervised models, generative models have no need for input-output pairs, instead they operate on sets of 
+                single training vectors. Each training vector is considered a sample from the system being modeled, and our task is to find model parameters
+                that result in a model that generates vectors with the same distribution as the training data, as per our coin flip example above.
+            </p>
+            <p>
+                At first it may appear that such a model has no purpose since it appears that we cannot query it, i.e. we could present a supervised model
+                with a raw image (input vector) and it would produce a set of labels (kitten, ball of string...). In contrast the generative model just generates 
+                pictures of cats and other things it has observed in the data, what's the point in that?
+            </p>
+            <br/>
+            <b>Pattern Completion</b>
+            <p> A simple way of addressing that apparent deficiency is to include labels in the training vectors, so we just combine the input-output vector
+                pairs from the supervised world into a single vector, i.e. we're saying that each image is coincident with some set of labels - model that.
+                Now our model will generate vectors that consist of a random image alongside labels that go with it. Interesting, but still not immediately useful.
+                However we can now query this model by presenting it with partial vectors (e.g. an image but no labels) and asking it to 'complete' the vector; whether this
+                is possible depends on the type of model, but broadly speaking we can devise types of model where a partial vector represents a prior on the set of
+                possible generations. As such we can ask a model to complete partial vectors, i.e. given this image, what labels are probable? However, that still
+                leaves the problem of people choosing what labels to use, and almost certainly producing a set of labels that are deficient in quantity and quality.
+            </p>
+            <p>Note however that pattern completion also works the other way, e.g. here are some labels, generate some images that would generally co-occur
+                with them. Or, here is a partial image, attempt to complete it <b>and</b> produce some relevant labels that describe what the model though it saw.
+                We usually can't use supervised models in this way because (A) they're fundamentally devised to handle one way mappings, and (B) the mappings
+                are based on a deficient set of labels.
+            </p>
+            <br/>
+            <b>Labels are Categories are Features</b>
+            <p>
+                Labels are just categories, some binary variable that can be on or off, you either have it or you don't. Some labels a person might devise are - 
+                <em>cat, dog, car, house, chair, table, leg, red, blue, etc.</em> Note that these are somewhat high level, we haven't defined 'cat paw',
+                'left front cat paw', 'cat whisker', 'floppy left cat ear', etc. We could do but it's highly impractical for a person to assign these labels (and
+                their location in the image). In fact there's a hierarchy of categories, e.g. room -> floor -> cat -> 'cat leg' -> paw -> claw. Why not
+                define were each of these things are and how they relate to the other things? Given that that's how the world is structured, and we are trying to model 
+                images from the world, it seems reasonable that our model would use such a scheme to represent the world.
+            </p>  
+            <br/>
+            <b>Automatic Feature Discovery</b>
+            <p>
+                To some extent supervised models are learning to represent the world by learning that certain image features we didn't tell it about are 
+                co-incident, e.g. a model could learn to identify cat legs and that they're usually attached to cats, even though we didn't manually assign a label
+                for 'cat leg'. In the generative model world we require the model to learn <b>all</b> features automatically via gradient descent learning. And because these 
+                features are automatically learned they can be more numerous, they can be properly localised (this set of pixels relates to a cat leg), and they can form 
+                probabilistic associations (a cat leg is nearly always co-incident with whole cats, and often co-incident with balls of string).
+                This is probably the major key distinction between supervised and generative models with regards to their efficacy, and scalability. Generative models 
+                take raw data and discover the features in that data that best represent it; supervised models... don't, and require significant manual effort to build 
+                the training data sets.
+            </p>
+            <br/>
+            <b>Gradient of Generative Models</b>
+            <p>
+                The elephant in the room is that I never mentioned what the quality metric is for generative models. For supervised models we have the error between
+                the target and produced vector. How do we arrive at an error value for a generative model? The short answer is that we use the difference between the 
+                produced probability distribution and the target distribution (i.e the distribution observed in the training data). It's perhaps helpful to start with
+                the coin flip domain, i.e. e.g. if B=0 then we have zero probability of creating the data set H-H-T-H, and in fact we can calculate the probability that 
+                our model will generate coin tosses with the same distribution as the training data, and also the gradient of that function with respect to a model variable;
+                and so we have a gradient function to plug into a gradient descent based model trainer.
+            </p>
+            <br/>
+            <hr/>
+            <p>
+            The ideas in, and inspiration for this post derive heavily from:
+            <ul>
+            <li><a href="http://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection, Self-Supervised Learning</a></li>
+            <li><a href="http://sifter.org/~simon/journal/">The Evolution of Cybernetics A Journal</a></li>
+            </ul>
+            </p>
+
+            <br/>
+            <p>Colin, August 2016</p>
+            <br/>
+            <hr />
+            <div>
+                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2015 Colin
+                Green.<br /> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">Creative Commons
+            Attribution 3.0 License
+                </a>
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
