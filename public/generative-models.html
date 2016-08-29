@@ -36,19 +36,20 @@
             </p>
             <p>$$B = \frac{N_{heads}}{N_{heads} + N_{tails}} \tag{1}$$</p>
             <p>I.e. we set B to the proportion of total flips that are heads.</p>
-
-            <p><em>Note. This estimate based on a simple ratio isn't quite right, however its error decreases as the number of samples (coin flips) in the data set increases.</em></p>
+            <blockquote>
+            <em>Note. This estimate based on a simple ratio isn't quite right, however `B` approaches the correct value with increasing `N_{\t\o\t\a\l}`.</em></p>
+            </blockquote>
             <p>
                 If we now run our model in generative mode (i.e. take random samples from it) we observe that approximately 75% of the tosses are heads as per the 
-                real coin, i.e. the distribution of our model matches that of the system it is modeling. So far, so good.
+                real coin, i.e. our model generates data with a distribution that matches that of the system it is modeling. So far, so good.
             </p>
             <br/>
             <b>Big Models</b>
             <p>
                 Unfortunately our coin flip model with a single variable isn't very useful. If we wish to model large datasets of images, audio, text, etc. and the complex
                 hierarchy of structures inherent to those types of data (e.g. understanding that some subset of pixels in an image represent a kitten, another subset represent
-                a ball of string, and the kitten and string are often observed together in the data set as a whole) then we need a lot more model variables. Contemporary models may contain 100s of millions
-                or even billions of variables, and there is no simple mathematical expression (such as our equation 1) that will give us the optimal value for each of them. In such
+                a ball of string, and that kittens and balls of string are often observed together) then we need a lot more model variables. Contemporary models may contain hundreds
+                of millions or even billions of variables, and there is no simple mathematical expression (such as our equation 1) that will give us the optimal value for each of them. In such
                 cases the go-to method is that of gradient following (most commonly referred to as <a href="https://en.wikipedia.org/wiki/Gradient_descent">Gradient Descent</a>).
             </p>
             <br/>
@@ -60,18 +61,30 @@
                 slowly 'nudge' the model towards the desired goal. It turns out this approach can work very well, although caveats apply. 
             </p>
             <p>
-                In short, we calculate the gradient (i.e. the first order derivative) of the quality metric with respect to a parameter and follow 
-                the gradient in tiny steps. That is, rather than the equation 1 approach of jumping directly to the know optimal value, instead we move
-                incrementally in a direction towards where we think the optimal value will be, noting that each variable is being updated simultaneously 
-                with millions of others, therefore our gradient estimate for each variable is changing as all of those other variables change.  
-            </p>
+                In short, we calculate the gradient (i.e. the first order derivative) of the quality metric with respect to a model variable, and follow 
+                the gradient in tiny steps. That is, rather than the equation 1 approach of jumping directly to a directly calculated optimal value,
+                instead we move incrementally in a direction towards where we think the optimal value will be, noting that each variable is being updated
+                simultaneously with millions of others and therefore our gradient estimate for each variable is changing as all of those other variables change.  
+            </p>            
+            <blockquote>Notes<br/><br/> Quality here is a single scalar value that we can calculate for a whole model, it is a value we wish to maximise.
+                Actually the term 'quality' isn't in wide use, but I think it best captures what this value is. Terms you will more likely see used are
+                Error, Energy or Entropy; noting that we want to minimise error (hence the term gradient <em>descent</em>). 
+            </blockquote>
+            <blockquote>
+                A single quality value considered alone generally doesn't have significant meaning. A quality metric gives us a way of determining if
+                some model is better or worse than some other model, and therefore is able to guide the gradient descent learning towards better models.
+                After some period of time, or once gradient descent is no longer finding better models, we can begin testing the learned model to 
+                see how well it performs; the quality metric no longer has any purpose, it was solely a means of guiding the learning process.                 
+            </blockquote>
+
+
 
             <br/>
             <b>Supervised Models</b>
             <p>
                  In <a href="https://en.wikipedia.org/wiki/Supervised_learning">Supervised Learning</a> a model will typically produce 
                 an output vector for a given input vector, and the training data is in the form of input-output pairs. In that world there's a natural choice
-                of quality, i.e. how close each produced output vector is to the desired (target) output vector. The error at the outputs is a simple pointwise 
+                of quality, i.e. how close each produced output vector is to the correct (target) output vector. The error at the outputs is a simple pointwise 
                 subtraction of the target vector from the produced vector, it's then necessary to communicate that error back through the model in order to 
                 calculate the error gradient at each variable. As we go further back into layers of the model the error signal can become greatly diminished and noisy, 
                 and this has been a long running issue and focus of research (see <a href="https://en.wikipedia.org/wiki/Backpropagation">backpropagation</a>).
@@ -80,17 +93,17 @@
                 The need for target vectors also causes problems, e.g. for the inputs we might have a set of raw images, and for the corresponding outputs we might 
                 have a series of labels of things (i.e. binary categories) for each image (a ball of string, a kitten...).
                 The choice of labels will typically be somewhat artificial in that they're defined by people and what they think the relevant features are in each image,
-                and the choice of labels may not be fully representative of everything 'going on' in an image that is relevant to the model we wish to build,
+                therefore the choice of labels may not be fully representative of everything 'going on' in an image that is relevant to the model we wish to build,
                 after all a picture is worth a thousand words.
             </p>             
             <p>
-                E.g. if we wanted a general purpose image recognition model then we want to model <b>everything</b> in an image - the fluffiness of the cat,
+                E.g. if we want to create a general purpose image recognition model then we want to model <b>everything</b> in an image - the fluffiness of the cat's fur,
                 the texture of the carpet, the subtle change in light tone across the room, the wound fibres that make up the string, the relative positions 
-                of the cat and the ball of string, the angle a ray of sunlight makes across a wall, the shadow vast by a vase on the windowsill ... and so on.
+                of the cat and the ball of string, the angle a ray of sunlight makes across a wall, the shadow cast by a vase on the windowsill ... and so on.
             </p>
             <p>
                 Another problem with image labels in particular is that ideally we would be localising them, so <em>this</em> subset of pixels represent the cat, rather than
-                <em>there's a cat somewhere in this image</em>, let's get the model figure out where. Images are typically (currently) modeled by convolutional nets, i.e. 
+                <em>there's a cat somewhere in this image, let's get the model figure out where</em>. Images are typically (currently) modeled by convolutional nets, i.e. 
                 an image is broken down into sub-regions (usually overlapping square regions), and ideally we would be assigning our 'cat' label to the correct regions. 
                 So the problem of producing good labels is not just the choice of labels, but also which regions of an image they apply to. In non-image data sets the same 
                 problem generally applies (label localisation), i.e. this problem is not specific to image data.     
@@ -103,9 +116,9 @@
                 that result in a model that generates vectors with the same distribution as the training data, as per our coin flip example above.
             </p>
             <p>
-                At first it may appear that such a model has no purpose since it appears that we cannot query it, i.e. we could present a supervised model
-                with a raw image (input vector) and it would produce a set of labels (kitten, ball of string...). In contrast the generative model just generates 
-                pictures of cats and other things it has observed in the data, what's the point in that?
+                At first it may seem that such a model has no purpose since it appears that we cannot query it. We could present a supervised model
+                with a raw image (input vector) and it would produce a set of labels (kitten, ball of string...); in contrast the generative model just generates 
+                pictures of cats and other things it has observed in the data, what's the point of that?
             </p>
             <br/>
             <b>Pattern Completion</b>
@@ -118,24 +131,22 @@
                 leaves the problem of people choosing what labels to use, and almost certainly producing a set of labels that are deficient in quantity and quality.
             </p>
             <p>Note however that pattern completion also works the other way, e.g. here are some labels, generate some images that would generally co-occur
-                with them. Or, here is a partial image, attempt to complete it <b>and</b> produce some relevant labels that describe what the model though it saw.
+                with them. Or, here is a partial image, attempt to complete it <b>and</b> produce some relevant labels that describe what the model thought it saw.
                 We usually can't use supervised models in this way because (A) they're fundamentally devised to handle one way mappings, and (B) the mappings
                 are based on a deficient set of labels.
             </p>
             <br/>
-            <b>Labels are Categories are Features</b>
+            <b>Automatic Feature Discovery</b>
             <p>
                 Labels are just categories, some binary variable that can be on or off, you either have it or you don't. Some labels a person might devise are - 
                 <em>cat, dog, car, house, chair, table, leg, red, blue, etc.</em> Note that these are somewhat high level, we haven't defined 'cat paw',
-                'left front cat paw', 'cat whisker', 'floppy left cat ear', etc. We could do but it's highly impractical for a person to assign these labels (and
+                'left front cat paw', 'cat whisker', 'floppy left cat ear', 'car wheel nut', etc. We could do but it's highly impractical for a person to assign these labels (and
                 their location in the image). In fact there's a hierarchy of categories, e.g. room -> floor -> cat -> 'cat leg' -> paw -> claw. Why not
-                define were each of these things are and how they relate to the other things? Given that that's how the world is structured, and we are trying to model 
+                define were each of these things are and how they relate to the other things? Given that that's how the world is structured and that we are trying to model 
                 images from the world, it seems reasonable that our model would use such a scheme to represent the world.
             </p>  
-            <br/>
-            <b>Automatic Feature Discovery</b>
             <p>
-                To some extent supervised models are learning to represent the world by learning that certain image features we didn't tell it about are 
+                To some extent supervised models are learning to represent the training data by learning that certain image features we didn't tell it about are 
                 co-incident, e.g. a model could learn to identify cat legs and that they're usually attached to cats, even though we didn't manually assign a label
                 for 'cat leg'. In the generative model world we require the model to learn <b>all</b> features automatically via gradient descent learning. And because these 
                 features are automatically learned they can be more numerous, they can be properly localised (this set of pixels relates to a cat leg), and they can form 
@@ -147,12 +158,13 @@
             <br/>
             <b>Gradient of Generative Models</b>
             <p>
-                The elephant in the room is that I never mentioned what the quality metric is for generative models. For supervised models we have the error between
-                the target and produced vector. How do we arrive at an error value for a generative model? The short answer is that we use the difference between the 
-                produced probability distribution and the target distribution (i.e the distribution observed in the training data). It's perhaps helpful to start with
-                the coin flip domain, i.e. e.g. if B=0 then we have zero probability of creating the data set H-H-T-H, and in fact we can calculate the probability that 
-                our model will generate coin tosses with the same distribution as the training data, and also the gradient of that function with respect to a model variable;
-                and so we have a gradient function to plug into a gradient descent based model trainer.
+                The elephant in the room is that I've yet to mention what the quality metric is for generative models. For supervised models we have the error between
+                the target and produced vectors and this forms the basis of a quality metric; how do we arrive at an error value for a generative model? The short answer
+                is that we use the difference between the generated probability distribution and the target distribution (i.e the distribution observed in the training data).
+                It's perhaps helpful to start with the coin flip domain, i.e. e.g. if B=0 then we have zero probability of creating the data set H-H-T-H, and in fact we can,
+                for a given value of B, calculate the probability that our model will generate coin tosses with the same distribution as the training data, and also the 
+                gradient of that function with respect to a model variable; and so we have a gradient function to plug-in to a gradient descent based model learning algorithm. 
+                Finding model types that have definable and fast to compute quality gradient functions is the subject of ongoing research.
             </p>
             <br/>
             <hr/>
@@ -165,11 +177,14 @@
             </p>
 
             <br/>
-            <p>Colin, August 2016</p>
+            <p>Colin,
+                <br/>
+                August 27th, 2016
+            </p>
             <br/>
             <hr />
             <div>
-                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2015 Colin
+                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2016 Colin
                 Green.<br /> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">Creative Commons
             Attribution 3.0 License
                 </a>
