@@ -31,13 +31,55 @@
                 <a href="http://sifter.org/~simon/journal/20150603.html">Gradient of Auto-Normalized Probability Distributions</a>
             </p>
             <br/>
-            <b>Overview</b>
+            <b>Introduction</b>
             <p>
-                The bigger picture here is that we have a network of nodes where the nodes are grouped into distinct variables. The nodes
-                within a variable determine the number of possible discrete states that a variable can take, and a given
-                node activation level indicates that node's probability of being the chosen state for its owning group (chosen
-                stochastically). This is all in the spirit/context of <a href="http://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection</a>                and 'furf' networks (furf is just shorthad for FUsion-ReFlection).
+                This post is an exploration of some of the maths in furf networks (see: <a href="http://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection</a>). 
+                A furf net is a <a href="https://en.wikipedia.org/wiki/Generative_model">generative model</a> that is capable of generating and completing 
+                patterns stochastically, and also learning patterns we present to it.
             </p>
+            <b>Furf Nets</b>
+            <p>
+                A furf network consists of a network of nodes arranged into layers. Nodes within each layer are arranged into groups, and 
+                a node can be in only one group. Each group represents a variable with N possible discrete states where N is the number of 
+                nodes in the group, i.e. each node in the group represents one of the possible states.
+            </p>
+            <p>
+                We determine a group's state by summing all incoming activation signals to nodes in a group to obtain one activation 
+                level per node, and then normalising those activations across the group such that they sum to one. We can then select the winning
+                node stochastically by treating each node's activation level as its probability of activation.  
+            </p>
+            <p>
+                In <a href="http://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection</a> the groups are arranged as a tree, i.e. 
+                the nodes in a group are fully connected to all the nodes in one parent group, and a group can have multiple child groups. Although 
+                the furf generative model and learning law are powerful, the restriction to a tree topology limits the expressibility of the
+                generative model and therefore the type of abstract associations that can be learned. As such there is good motivation to extend furf trees
+                to furf networks in which a group can be fully connected to multiple parent groups.
+            </p>
+
+            <b>Product of Experts</b>
+            <p>
+                A key problem in extending furf trees to networks is that the learning law requires each node's activation probability, i.e. its
+                post normalised activation level. In the tree model each node has only one incoming activation (only one node in the parent group 
+                is active at a time), so we can devise a learnign law that 
+
+            </p>
+
+
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+
+
             <p>
                 Incoming connections to a node (and the connection weights) serve to define that node's activation level and thus its probability
                 of being 'chosen' (being the selected state for the variable). There is a problem therefore around how to
@@ -130,38 +172,38 @@
                 sign is flipped (we would want to <i>maximise</i> equation 4 as it is written).
             </p>
             <br />
-            <blockquote><i>Taking the partial derivative and pulling in `\partial_i \log \mathbf{P}(X_k)` from above:</i></blockquote>
+            <blockquote><i>Taking the partial derivative and pulling in `\partial_i \log \mathbf{P}(D_k)` from above:</i></blockquote>
             <p>
-                \begin{align} \partial_i \log \mathbf{P}(\bar{D}) & = \sum_k{ \left[ \bar{\mathbf{P}}(\bar{D}_k) \partial_i \log \mathbf{P}(X_k)
-                \right]} \tag{5.A} \\\\ & = \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k) \left(\frac{\partial_i F_k}{F_k} -
-                \frac{\partial_i F_i}{\sum_m F_m}\right) \right]} \tag{5.B} \\\\ & = \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k)
+                \begin{align} \partial_i \log \mathbf{P}(\bar{D}) & = \sum_k{ \left[ \bar{\mathbf{P}}(\bar{D}_k) \partial_i \log \mathbf{P}(D_k)
+                \right]} \tag{4.5} \\\\ & = \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k) \left(\frac{\partial_i F_k}{F_k} -
+                \frac{\partial_i F_i}{\sum_m F_m}\right) \right]} \tag{4.6} \\\\ & = \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k)
                 \frac{\partial_i F_k}{F_k} \right]} - \sum_k{\left[ \bar{\mathbf{P}}(\bar{D}_k) \frac{\partial_i F_i}{\sum_m
-                F_m} \right]} \tag{5.C} \\\\ & = \bar{\mathbf{P}}(\bar{D}_i) \frac{\partial_i F_i}{F_i} - \frac{\partial
-                F_i}{\sum_m F_m} \tag{5.D} \\\\ & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i) - \frac{F_i}{\sum_m
-                F_m}\right] \tag{5.E} \\\\ & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i) - \mathbf{P}(D_i)
+                F_m} \right]} \tag{4.7} \\\\ & = \bar{\mathbf{P}}(\bar{D}_i) \frac{\partial_i F_i}{F_i} - \frac{\partial
+                F_i}{\sum_m F_m} \tag{4.8} \\\\ & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i) - \frac{F_i}{\sum_m
+                F_m}\right] \tag{4.9} \\\\ & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i) - \mathbf{P}(D_i)
                 \right] \tag{5} \end{align}
             </p>
             <br />
-            <p>At (5.1) we take the derivative w.r.t. $i$ (actually $v_i$, see notes above). $\bar{\mathbf{P}}(\bar{D}_k)$ is
+            <p>At (4.5) we take the derivative w.r.t. $i$ (actually $v_i$, see notes above). $\bar{\mathbf{P}}(\bar{D}_k)$ is
                 a constant factor w.r.t. $i$, therefore that term can go outside of the partial dertivative for clarity.
             </p>
-            <p>At (5.2) we substitute in equation (2), and at (5.3) we simply multiply out the terms.
+            <p>At (4.6) we substitute in equation (2), and at (4.7) we simply multiply out the terms.
             </p>
-            <p>At (5.4) the sum over k in the left hand term has simplified because $\partial_i{F_k}$ is zero for all $k$ except
-                when $k=i$. In the right hand term we note that in (5.3) there was no $k$ in $\frac{\partial_i{F_i}}{\sum_m{F_m}}$,
+            <p>At (4.8) the sum over k in the left hand term has simplified because $\partial_i{F_k}$ is zero for all $k$ except
+                when $k=i$. In the right hand term we note that in (4.7) there was no $k$ in $\frac{\partial_i{F_i}}{\sum_m{F_m}}$,
                 and since $\bar{\mathbf{P}}(\bar{D}_k)$ sums to one the entire term simplifies to $\frac{\partial_i{F_i}}{\sum_m{F_m}}$.
             </p>
-            <p>At (5.5) $\partial_i{F_i}) / F_i$ is factored out from both terms.
+            <p>At (4.9) $\partial_i{F_i} / F_i$ is factored out from both terms.
             </p>
-            <p>At (5.6) The right hand term is substituted for the LHS of equation (1).
+            <p>At (5) The right hand term is substituted for the LHS of equation (1).
             </p>
             <br />
 
             <blockquote><i>In sum:</i></blockquote>
             <p>
-                \begin{align} \mathbf{P}(D_k) & \equiv \frac{F_k}{\sum_m F_m}\tag{6.A} \\\\ \mathbf{P}(\bar{D}) & = \prod_k{ \mathbf{P}(D_k)^{\bar{\mathbf{P}}(\bar{D}_k)}
-                } \tag{6.B} \\\\ \partial_i \log \mathbf{P}(\bar{D}) & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i)
-                - \mathbf{P}(D_i) \right] \tag{6.C} \end{align}
+                \begin{align} \mathbf{P}(D_k) & \equiv \frac{F_k}{\sum_m F_m} \\\\ \mathbf{P}(\bar{D}) & = \prod_k{ \mathbf{P}(D_k)^{\bar{\mathbf{P}}(\bar{D}_k)}
+                } \\\\ \partial_i \log \mathbf{P}(\bar{D}) & = \frac{\partial_i F_i}{F_i} \left[ \bar{\mathbf{P}}(\bar{D}_i)
+                - \mathbf{P}(D_i) \right] \tag{6} \end{align}
             </p>
 
             <blockquote><i>So, what's it mean and why is it interesting?</i></blockquote>
@@ -193,7 +235,7 @@
 
             <blockquote><i>Then:</i></blockquote>
 
-            <p>$$ \partial_{j,i}F_i = \frac{F_i}{G_{j,i}} \partial_{j,i}{G_{j_i}} \tag{8} $$</p>
+            <p>$$ \partial_{j,i}F_i = \frac{F_i}{G_{j,i}} \partial_{j,i}{G_{j,i}} \tag{8} $$</p>
             <br />
 
             <p>As above, I'm interpreting $\partial_{j,i}$ as shorthand for $\partial_{v_{j,i}}$, i.e. the partial derivative
@@ -201,7 +243,7 @@
                 steps leading up to equation (8)...</p>
 
             <p>First we take the partial derivative w.r.t. $v_{j,i}$ (using the chain rule).</p>
-            <p>$$ \partial_{j,i}F_i = \partial_{G_{j,i}}{F_i} \cdot \partial_{j,i}G_{j,i} \tag{8.A} $$</p>
+            <p>$$ \partial_{j,i}F_i = \partial_{G_{j,i}}{F_i} \cdot \partial_{j,i}G_{j,i} \tag{7.9} $$</p>
 
             <p><b>N.B.</b> Only the ${j,i}$th component remains from the product term in (7) because that's the only component
                 that affects $v_{j,i}$. We have then applied the chain rule around that remaining variable.</p>
