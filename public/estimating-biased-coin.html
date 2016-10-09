@@ -1,0 +1,496 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Estimating a Biased Coin</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75" />
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['`','`'], ['\\(','\\)']]},
+        });
+    </script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen" />
+    <style>
+figure {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border: 1px dotted gray;
+}
+
+figure img {
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+figure figcaption {
+    text-align: center;
+    margin: 7px;
+}
+
+li {
+    margin: 15px 0;
+}
+    </style>
+</head>
+<body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+        <div class="articlebodyinner">
+            <br />
+            <h1 align="center">Estimating a Biased Coin</h1>
+            <p>
+                Consider a coin with bias B, i.e. with probability B of landing heads up when we flip it:
+            </p>
+            <p>\begin{align} P(H) &= B \\ P(T) &= 1-B \end{align}</p>
+            <p>
+                We have a source of new coins (i.e. an infinite pile of coins), and each coin has a randomly assigned bias uniformly distributed
+                over the interval [0,1].
+            </p>
+            <p>
+                <i>NB.</i> In practice we can achieve the full range of biases by
+                <a href="https://izbicki.me/blog/how-to-create-an-unfair-coin-and-prove-it-with-math.html">bending coins</a>,
+                although the focus here is on the maths rather than the coin analogy.
+            </p>
+            <br/>
+            <hr/>
+            <h2>Question 1</h2>
+            <p>
+                <b>We take a coin from the pile and flip it once; what is the probability of flipping heads?</b> (I.e. before
+                we've observed any flips of the coin.)
+            </p>
+            <p>
+                Each coin we take from the pile has a defined bias B but we don't know what B is for each chosen coin, if we did we could
+                say that P(H) = B for each known value of B. In the absence of knowing each specific B the probability
+                of flipping heads is given by the expectation for B:
+            </p>
+            <p>$$ P(H) = \Bbb E[B] = \frac{1}{2} $$</p>
+
+            <br/>
+            <b>Expectation (Estimate)</b>
+            <p>
+                Expectation is the value we expect to see <i>on average</i>, e.g. one way of defining `\Bbb E[B]` is as the
+                result of averaging over an infinite number of samples. For less than infinity samples we get the estimate:
+            </p>
+
+            <p>$$ \hat{\Bbb E}[B] = \frac{N_H}{N} $$</p>
+
+            <p>Noting that this estimate is poor for very small N; approaches the correct value with increasing N, and is exact for N=infinity:</p>
+
+            <p>$$ \lim \limits_{N \to \infty} \hat{\Bbb E}[B] = \Bbb E[B] $$</p>
+
+            <p>
+                <i>NB.</i> We can explore this estimation method with a computer simulation that keeps a running update of the estimate `N_H/N` on
+                an increasing number of samples (see <a href="#srcCode1">Source code #1: Numerical analysis of a single coin flip</a>)
+            </p>
+            <p>
+                By taking infinity samples we get a perfect reconstruction of B's uniform distribution, i.e. all possible outcomes are
+                represented, each with their correct proportion within the full set of samples as defined by the uniform distribution over B.
+            </p>
+
+            <br />
+            <br />
+            <b>Expectation (Exact)</b>
+            <p>
+                We can obtain a <a href="https://en.wikipedia.org/wiki/Closed-form_expression">closed form expression</a> for the exact value of
+                `\Bbb E[B]` by using B's <a href="https://en.wikipedia.org/wiki/Probability_density_function">probability density function</a> directly,
+                i.e. instead of recreating the distribution by taking infinity samples.
+            </p>
+            <p>
+                A uniform probability density function over interval [0,1] is given by:
+            </p>
+            <p>
+                $$ f(x) = \begin{cases}
+                1, & \text{for 0 &lt= x &lt= 1} \\
+                0 & \text{otherwise} \\
+                \end{cases} $$
+            </p>
+            <p>
+                Multiplying by `x` gives an expression representing each possible sample value multiplied by its probability:
+            </p>
+            <p>
+                $$ x \cdot f(x) = \begin{cases}
+                x, & \text{for 0 &lt= x &lt= 1} \\
+                0 & \text{otherwise} \\
+                \end{cases} $$
+            </p>
+            <p>
+                Integrating (i.e. summing over the interval [0,1]) gives us our average, i.e. the expected value of B:
+            </p>
+            <p>
+                \begin{align}
+                \Bbb E[B] &= \int _0^1 x \\[2ex]
+                &= \left[\frac{x^2}{2} + C \right]_0^1 = \frac{1}{2}\\[2ex]
+                \end{align}
+            </p>
+            <br />
+            <p>Also see <a href="#supplementalQ1">Question 1 Supplemental: Expectation of a uniform distribution with interval [a,b]</a></p>
+            <br/>
+            <br />
+            <hr />
+            <h2>Question 2</h2>
+            <p>
+                <b>
+                    We take a coin from the pile and flip it once. For those coins that flip heads what is the probability
+                    of a second flip also being heads?
+                </b>
+                <br />(I.e. what is our new estimate of B for those coins that have flipped heads once?)
+            </p>
+
+            <p>We know that:</p>
+            <ul style="list-style: none;">
+                <li>B > 0, i.e. B cannot be exactly zero.</li>
+                <li>B is unlikely to be a very small value, but it might be.</li>
+            </ul>
+            <br />
+
+            <p>The probability of flipping two heads is given by:</p>
+            <p>$$ P(HH) = P(H) \cdot P(H) = B^2 $$</p>
+
+            <p>The probability of flipping one heads and one tails is given by:</p>
+            <p>$$ P(HT) = B (1-B) $$</p>
+
+            <p>Generalising, the probability of flipping a given sequence S consisting of `h` heads and `t` tails, for a given bias `B`, is:</p>
+
+            <p>$$ P(S|B) = B^h (1-B)^t \tag{1}$$</p>
+
+            <p>
+                For a fixed S we can plot P(S|B) over the interval B=0 to 1, and this is in fact the
+                <a href="https://en.wikipedia.org/wiki/Likelihood_function">Likelihood function</a> for B, and is typically written with the two variables swapped, like so:
+            </p>
+            <p>$$ \mathcal{L}(B|S) = P(S|B) $$</p>
+            <p>
+                This reads as - the likelihood of B given S is equal to the probability of S given B. The likelihood notation emphasises that we have fixed S (the observed data),
+                and that B is the variable being explored.
+            </p>
+            <p>
+                Since B is a probability its value is limited to the interval [0,1] and therefore for a given S we can plot our likelihood function
+                over B's full range. There follows a series of such plots, one each for a different S (six example sets of observed outcomes).
+            </p>
+            <figure style="max-width:640px">
+                <img src="estimating-biased-coin/h1_t1.png" />
+                <img src="estimating-biased-coin/h2_t2.png" />
+                <img src="estimating-biased-coin/h2_t1.png" />
+                <img src="estimating-biased-coin/h5_t1.png" />
+                <img src="estimating-biased-coin/h1_t0.png" />
+                <img src="estimating-biased-coin/h2_t0.png" />
+                <figcaption>Figure 1.<br/> Likelihood functions for six different sets of observations.</figcaption>
+            </figure>
+
+            <p>Observations</p>
+            <ul>
+                <li>
+                    Note the very different ranges on the Y axes; this corresponds with longer sequences (e.g. h=5,t=1) generally having a lower
+                    probability of occurring than shorter ones (e.g. h=1, t=0).
+                </li>
+
+                <li>
+                    The longer sequences also have spikier plots; this corresponds with our estimate of B becoming more well defined
+                    with an increasing number of observations (which are samples from B). Recall from question 1 that we can obtain an exact
+                    value for B by taking an infinite number of samples; each additional sample provides additional information about the true value of B,
+                    as such, as the number of samples increases some values of B become increasingly unlikely.
+                </li>
+
+                <li>
+                    Note also that the <a href="https://en.wikipedia.org/wiki/Mode_(statistics)">mode</a> of each plot corresponds with
+                    the  `B = h/N`, i.e. the proportion of samples that are heads. This holds even for a sample size of 1, where the likelihood
+                    describes a diagonal line with the mode located at B=0 or B=1 for a single T or a single H respectively. However, note
+                    that a single heads does not rule out a very low value of B, although low values of B are unlikely. The only claim we can
+                    make with certainty on observing a single H is that B does not equal exactly zero.
+                </li>
+            </ul>
+            <br />
+            <br/>
+            <b>Integrating Likelihood (Discussion)</b>
+
+            <p>
+                By summing the values of P(S|B) over the full range of B we 
+                <a href="https://en.wikipedia.org/wiki/Marginal_distribution">marginalise</a> B, i.e. we obtain a single value for P(S) given 
+                an unknown and uniformly distributed B, i.e.:
+            </p>
+            <p>
+                $$ P(S) = \int _0^1 P(S|B) dB  \tag{2}   $$
+            </p>
+            <p>
+                <i>NB.</i> If B was not uniformly distributed then P(S) may still be obtained by calculating a <i>weighted</i> sum over P(S|B), with
+                 weights defined by B's probability density function.
+            </p>
+            <p>
+                At this point it's worth considering the similarities and differences between our likelihood functions from figure 1, and a 
+                probability density function (PDF). A PDF can also be integrated to arrive at a single probability value, however, a PDF
+                describes probability densities rather than probabilities, so how is it that we came to sum probabilities to arrive at a probability
+                rather than summing probability densities?
+            </p>
+            <p>
+                The answer is that our likelihood functions describe both probability <i>and</i> probability density. This has come about because the
+                free variable B is itself a probability and therefore bounded by the interval [0,1] (the 'unit length'). I.e. probability density is 
+                essentially normalised probability, or probability scaled per unit length; hence when the full range of the free variable is [0,1]
+                then no scaling is required to convert a probability value to a probability density value.
+            </p>
+            <p>
+                Note however that although our likelihood functions describe probability density, they do not sum to 1 and therefore do not  
+                qualify as a PDF; this is merely a convention of terminology, since they <i>are</i> functions that describe probability density!
+            </p>
+
+            <br/>
+            <br />
+            <b>Likelihood Bounded by the Unit Square</b>
+            <p>
+                As discussed above the free variable B is bounded by the interval [0,1], thus both the X and Y axes of our likelihood functions have 
+                interval [0,1] and our plots are bounded by the unit square. Therefore for one of our likelihood functions to sum to 1.0 (i.e. to achieve P(S)=1)
+                each P(S|B) has to be 1.0, and for that to occur S would have to occur with certainty regardless of B, so effectively a process in which S 
+                always occurs and B has no influence.
+            </p>
+            <p>
+                Furthermore, our likelihood functions describe a dividing line in the unit square, with P(S) represented by the area below the line, and P(!S) the 
+                area above the line. The fact that we are dealing with unit squares is not of particular mathematical significance, but it does make for conveniently
+                elegant plots. E.g. if we plot all six likelihood functions in the same unit square (i.e. at the same scale), then we see more clearly that the longer
+                sequences are far less probable overall than the shorter ones, for any given B (single readings from the function), but also for unknown B (area under each curve).
+            </p>
+            <br />
+            <figure style="max-width:460px">
+                <img src="estimating-biased-coin/likelihood_unitsquare.png" />
+                <figcaption>Figure 2.<br />
+                    The six likelihood functions from figure 1<br/>
+                    plotted at the same scale in a single unit square.
+                </figcaption>
+            </figure>
+            <br />
+            <br />
+            <b>Alternate Solution to Question 1</b>
+            <p>
+                The likelihood function for S with h=1, t=0 (the red diagonal) corresponds with the problem posed in question 1.
+                Q1 effectively asked: what is P(H) given no observations and a uniformly distributed B? (noting that S=H in this case, and
+                therefore P(S)=P(H)).
+            </p>
+            <p>
+                The likelihood function for h=1,t=0 represents the probability of flipping H for every possible value of B; integrating this
+                function gives the total probability of P(H) given an unknown and uniformly distributed B. From the plot we can see
+                visually that it is approximately one half, in agreement with the answer from question 1.
+            </p>            
+            <br />
+            <br />
+            <b>Integrating Likelihood (Derivation)</b>
+
+            <p>Restating (1), replacing B with x for clarity:</p>
+
+            <p>\begin{align}
+                P(S|x) &= x^h (1-x)^t                        \tag{1} \\[1em]
+                \int _0^1 P(S|x) dx &= \int _0^1 x^h (1-x)^t \\[1em]
+
+
+                P(S) &= \int _0^1 x^h (1-x)^t   &\text{applying (2)}
+
+                \end{align}
+            </p>
+            <p> 
+                We resolve the integral by restating in terms of the <a href="https://en.wikipedia.org/wiki/Beta_function">beta function</a>.
+                (<i>NB.</i> We can also resolve by repeated application of <a href="https://en.wikipedia.org/wiki/Integration_by_parts">integration by parts</a>.)
+            </p>
+            <p>
+                \begin{align}
+                B(h,t) &= \int _0^1 x^{h-1} (1-x)^{t-1}      dx \tag{beta function} \\[1em]
+                       &= \frac{(h-1)!(t-1)!}{(h+t-1)!}
+                \end{align}
+            </p>
+            <p>Giving:</p>
+            <p>\begin{align}
+                P(S) &= B(h+1, t+1) \\[1em]
+                P(S) &= \frac{h!t!}{(h+t+1)!}       \tag{3}
+                \end{align}
+            </p>
+
+            <br />
+            <br />
+            <b>Expectation Given an Observed Sequence</b>
+            <p>
+                The probability of flipping heads given an observed sequence S can be written as:
+            </p>
+            <p>
+            $$ P(SH | S) $$
+            </p>
+            <p>I.e. the probability of a sequence consisting of S+H, given that we have already observed S. Applying <a href="bayes-derivation.html">Bayes' theorem</a>:</p>
+            <p>
+            $$ P(SH | S) = \frac{P(S|SH)P(SH)}{P(S)} $$
+            </p>
+            <p>
+                Note that P(S|SH) is always 1, i.e. if we've observed SH then S has already occurred; leaving:
+            </p>
+            <p>
+            $$ P(SH | S) = \frac{P(SH)}{P(S)}$$
+            </p>
+            <p>
+                Substituting in equation (3) to both the numerator and denominator:
+            </p>
+            <p>
+            \begin{align}
+            P(SH | S) &= \frac{(h+1)!t!}{(h+t+2)!} \cdot \frac{(h+t+1)!}{h!t!}  \\[1em]
+            P(SH | S) &= \frac{h+1}{h+t+2}   \tag{4}
+            \end{align}
+            </p>
+            <p>
+                Noting that P(SH|S) is our expectation for B given S, hence we can also write (4) as: 
+            </p>
+            <p>
+                $$ \Bbb E[B|S] = \frac{h+1}{h+t+2} $$
+            </p>
+            <br />
+            <br />
+            <b>Concluding Question 2</b>
+            <p>If we observe a single H then h=1 and t=0; we can put these values into equation (4) to get:</p>
+            <p>
+                $$ \Bbb E[B|H] = \frac{2}{3} $$
+            </p>
+            <p>
+                We can also explore and validate this relationship with a <a href="https://en.wikipedia.org/wiki/Numerical_analysis">numerical</a>
+                analysis (see <a href="#srcCode2">Source code #2: Numerical analysis of a single coin flip conditional on a single observed H</a>)                
+            </p>
+
+            <br />
+            <br />
+            <br />
+            <hr />
+            <b id="supplementalQ1">Question 1 Supplemental: Expectation of a uniform distribution with interval [a,b]</b>
+            <p>A uniform probability density function over interval [a,b] is given by:</p>
+
+            <p> $$ f(x) = \begin{cases} \frac{1}{b-a}, & \text{for a &lt= x &lt= b} \\ 0 & \text{otherwise} \\ \end{cases} $$</p>
+
+            <p>Multiplying by `x` gives an expression representing each possible sample value multiplied by its probability:</p>
+            <p>$$ x \cdot f(x) = \begin{cases} \frac{x}{b-a}, & \text{for a &lt= x &lt= b} \\ 0 & \text{otherwise} \\ \end{cases}$$</p>
+
+            <p>Integrating (i.e. summing over the interval [a,b]) gives the expected value of B:</p>
+            <p>
+                \begin{align}
+                \Bbb E[B] &= \int _a^b \frac{x}{b-a} dx \\[2ex]
+                &= \frac{1}{b-a} \left[\frac{x^2}{2}\right]_a^b \\[2ex]
+                &= \frac{1}{b-a} \left( \frac{b^2-a^2}{2} \right) \\[2ex]
+                &= \frac{b^2-a^2}{2(b-a)} \\[2ex]
+                \end{align}
+            </p>
+            <br />
+            <p>
+                Applying <a href="https://en.wikipedia.org/wiki/Difference_of_two_squares">difference of squares</a>, i.e: `b^2-a^2
+                = (b+a)(b-a)` :</a>
+            </p>
+            <p>
+                \begin{align} \Bbb E[B] &= \frac{(b+a)(b-a)}{2(b-a)} \\[2ex] &= \frac{b+a}{2} \\ \end{align}
+            </p>
+
+            <p>E.g. for interval [0,1]; `a=0, b=1`, giving:</p>
+            <p>$$ \Bbb E[B] = \frac{1}{2} $$</p>
+
+            <br />
+            <br />
+            <hr />
+            <b id="srcCode1">Source code #1: Numerical analysis of a single coin flip</b>
+            <pre style="white-space: pre-wrap; background: hsl(200,80%,92%);"><code xstyle="background: hsl(220, 80%, 90%);">
+    private static void RunSimulation()
+    {
+        Random rng = new Random();
+        int h = 0;
+        int t = 0;
+        for(;;)
+        {
+            for(int i=0; i<100000000; i++)
+                                      {
+                // Take a coin from the pile, i.e. sample B from a uniform random distribution.
+                double b = rng.NextDouble();
+                // Flip the coin once, with P(H) = b,
+                // record the outcomes.
+                if(rng.NextDouble() < b) { h++; } else { t++; }
+            }
+            // Report running estimates of P(H) and P(T)
+            int total = h+t;
+            double ph = (double)h/total;
+            double pt = (double)t/total;
+            Console.WriteLine($"P(h) {ph}, P(t) {pt}");
+        }
+    }
+
+</code></pre>
+            <br />
+            <hr />
+            <b id="srcCode2">Source code #2: Numerical analysis of a single coin flip conditional on a single observed H</b>
+            <pre style="white-space: pre-wrap; background: hsl(200,80%,92%);"><code xstyle="background: hsl(220, 80%, 90%);">
+    private static void RunSimulation()
+    {
+        Random rng = new Random();
+        int h = 0;
+        int t = 0;
+        for(;;)
+        {
+            for(int i=0; i<100000000; i++)
+                                      {
+                // Take a coin from the pile, i.e. sample B from a uniform random distribution.
+                double b = rng.NextDouble();
+                // Flip the coin once, with P(H) = b.
+                // If we flip heads then flip again and record the outcomes,
+                // if we flip tails then just ignore and start again with another coin.
+                if(rng.NextDouble() < b) 
+                {
+                    // Heads; flip again.
+                    if(rng.NextDouble() < b) { h++; } else { t++; }
+                }
+            }
+            // Report running estimates of P(H) and P(T)
+            int total = h+t;
+            double ph = (double)h/total;
+            double pt = (double)t/total;
+            Console.WriteLine($"P(h) {ph}, P(t) {pt}");
+        }
+    }
+
+</code></pre>
+            <br />
+            <hr />
+            <b id="ggplot2Commands">ggplot2 commands for generating likelihood function plots</b>
+            <pre style="white-space: pre-wrap; background: hsl(50, 100%, 80%);"><code xstyle="background: hsl(220, 80%, 90%);">
+    # Define the six likelihood functions.
+    f1 <- function(x) x^1 * (1-x)^1
+          f2 <- function(x) x^2 * (1-x)^2
+    f3 <- function(x) x^2 * (1-x)^1
+    f4 <- function(x) x^5 * (1-x)^1
+    f5 <- function(x) x^1 * (1-x)^0
+    f6 <- function(x) x^2 * (1-x)^0
+
+    # Generate the six likelihood function plots.
+    ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = f1) + ggtitle("L(B|S) for S with h=1,t=1") + xlab("B") + ylab("P(S|B)")
+    ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = f2) + ggtitle("L(B|S) for S with h=2,t=2") + xlab("B") + ylab("P(S|B)")
+    ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = f3) + ggtitle("L(B|S) for S with h=2,t=1") + xlab("B") + ylab("P(S|B)")
+    ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = f4) + ggtitle("L(B|S) for S with h=5,t=1") + xlab("B") + ylab("P(S|B)")
+    ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = f5) + ggtitle("L(B|S) for S with h=1,t=0") + xlab("B") + ylab("P(S|B)")
+    ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = f6) + ggtitle("L(B|S) for S with h=2,t=0") + xlab("B") + ylab("P(S|B)")
+
+    # Generate plot with all six likelihood functions.
+    ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = f1, aes(colour="h=1, t=1"))+ stat_function(fun = f2, aes(colour="h=2, t=2")) + ggtitle("L(B|S)") + xlab("B") + ylab("P(S|B)") + theme(legend.title=element_blank())
+            </code></pre>
+
+            <br />
+            <br />
+            <p>
+                Colin,
+                <br /> October 9th, 2016
+            </p>
+            <br />
+            <hr />
+            <div>
+                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2016 Colin
+                Green.
+                <br /> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+                    Creative Commons
+                    Attribution 3.0 License
+                </a>
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+</body>
+</html>
