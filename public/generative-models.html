@@ -25,21 +25,30 @@
             <br />
             <p>
                 Consider a very simple generative model consisting of a single variable B representing the probability of a biased coin toss landing heads up.
-                We are given a data set consisting of a sequence of actual coin flips and we are tasked with fitting the model to the data, i.e. finding 
-                the value of B that best represents the data (or more specifically - that best represents the system from which the data was sampled).
+                We are given a data set consisting of a sequence of actual coin flips and are tasked with fitting the model to the data, i.e. finding 
+                the value of B that best represents the data (or more specifically, that best represents the system from which the data was sampled).
             </p>
             <p>
-                Let's start with a simple data set of H-H-T-H. We observe that 75% of the outcomes are heads, and therefore
-                conclude that the optimal value for B is 0.75. Stated formally:
+                We're given a large data set of recorded coin flips in which there is a 75% / 25% distribution between heads and tails respectively, we therefore conclude that 
+                the optimal value for our model variable B is 0.75:
             </p>
-            <p>$$B = \frac{N_{heads}}{N_{heads} + N_{tails}} \tag{1}$$</p>
-            <p>I.e. we set B to the proportion of total flips that are heads.</p>
+            <p>$ \hat{\Bbb E}[B] = \frac{N_{heads}}{N} \tag{1}$</p>
+            <p>I.e. The proportion of flips that are heads gives the estimate 0.75 for the expected value of B.</p>
             <blockquote>
-            <em>Note. This estimate based on a simple ratio isn't quite right, however `B` approaches the correct value with increasing `N_{\t\o\t\a\l}`.</em></p>
+                <p>
+                    <i><b>NB.</b> The exact expected value for B is given by:</i>
+                </p>
+            </blockquote>
+            <p>$ B = \frac{N_{heads} + 1}{N + 2} \tag{2}$</p>
+            <blockquote>
+                <p>
+                    <i>(see <a href="estimating-biased-coin.html">Estimating a Biased Coin</a> for a derivation).</i>
+                </p>
+                <p><i>Suffice to say that for large N the estimate of B based on a simple ratio is a good one, but poor for very small values of N.</i></p>
             </blockquote>
             <p>
                 If we now run our model in generative mode (i.e. take random samples from it) we observe that approximately 75% of the tosses are heads as per the 
-                real coin, i.e. our model generates data with a distribution that matches that of the system it is modeling. So far, so good.
+                real coin, i.e. our model generates data with a distribution very similar to that of the system it is modeling. So far, so good.
             </p>
             <br/>
             <b>Big Models</b>
@@ -47,7 +56,7 @@
                 Unfortunately our coin flip model with a single variable isn't very useful. If we wish to model large datasets of images, audio, text, etc. and the complex
                 hierarchy of structures inherent to those types of data (e.g. understanding that some subset of pixels in an image represent a kitten, another subset represent
                 a ball of string, and that kittens and balls of string are often observed together) then we need a lot more model variables. Contemporary models may contain hundreds
-                of millions or even billions of variables, and there is no simple mathematical expression (such as our equation 1) that will give us the optimal value for each of them. In such
+                of millions or even billions of variables, and there is no simple mathematical expression (such as our equation 2) that will give us the optimal value for each of them. In such
                 cases the go-to method is that of gradient following (most commonly referred to as <a href="https://en.wikipedia.org/wiki/Gradient_descent">Gradient Descent</a>).
             </p>
             <br/>
@@ -95,7 +104,7 @@
                 after all a picture is worth a thousand words.
             </p>             
             <p>
-                E.g. if we want to create a general purpose image recognition model then we want to model <b>everything</b> in an image - the fluffiness of the cat's fur,
+                E.g. if we want to create a general purpose image recognition model then we want to model <i>everything</i> in an image - the fluffiness of the cat's fur,
                 the texture of the carpet, the subtle change in light tone across the room, the wound fibres that make up the string, the relative positions 
                 of the cat and the ball of string, the angle a ray of sunlight makes across a wall, the shadow cast by a vase on the windowsill ... and so on.
             </p>
@@ -129,7 +138,7 @@
                 leaves the problem of people choosing what labels to use, and almost certainly producing a set of labels that are deficient in quantity and quality.
             </p>
             <p>Note however that pattern completion also works the other way, e.g. here are some labels, generate some images that would generally co-occur
-                with them. Or, here is a partial image, attempt to complete it <b>and</b> produce some relevant labels that describe what the model thought it saw.
+                with them. Or, here is a partial image, attempt to complete it <i>and</i> produce some relevant labels that describe what the model thought it saw.
                 We usually can't use supervised models in this way because (A) they're fundamentally devised to handle one way mappings, and (B) the mappings
                 are based on a deficient set of labels.
             </p>
@@ -146,7 +155,7 @@
             <p>
                 To some extent supervised models are learning to represent the training data by learning that certain image features we didn't tell it about are 
                 co-incident, e.g. a model could learn to identify cat legs and that they're usually attached to cats, even though we didn't manually assign a label
-                for 'cat leg'. In the generative model world we require the model to learn <b>all</b> features automatically via gradient descent learning. And because these 
+                for 'cat leg'. In the generative model world we require the model to learn <i>all</i> features automatically via gradient descent learning. And because these 
                 features are automatically learned they can be more numerous, they can be properly localised (this set of pixels relates to a cat leg), and they can form 
                 probabilistic associations (a cat leg is nearly always co-incident with whole cats, and often co-incident with balls of string).
                 This is probably the major key distinction between supervised and generative models with regards to their efficacy, and scalability. Generative models 
@@ -157,12 +166,12 @@
             <b>Gradient of Generative Models</b>
             <p>
                 The elephant in the room is that I've yet to mention what the quality metric is for generative models. For supervised models we have the error between
-                the target and produced vectors and this forms the basis of a quality metric; how do we arrive at an error value for a generative model? The short answer
-                is that we use the difference between the generated probability distribution and the target distribution (i.e the distribution observed in the training data).
+                the target and produced vectors and this forms the basis of a quality metric; how do we arrive at an error value for a generative model?
+            </p>
+            <p> The short answer is that we use the difference between the generated probability distribution and the target distribution (i.e the distribution observed in the training data).
                 It's perhaps helpful to start with the coin flip domain, i.e. e.g. if B=0 then we have zero probability of creating the data set H-H-T-H, and in fact we can,
                 for a given value of B, calculate the probability that our model will generate coin tosses with the same distribution as the training data, and also the 
-                gradient of that function with respect to a model variable; and so we have a gradient function to plug-in to a gradient descent based model learning algorithm. 
-                Finding model types that have definable and fast to compute quality gradient functions is the subject of ongoing research.
+                gradient of that function with respect to a model variable; and so we have a gradient function to plug-in to a gradient descent learning algorithm.
             </p>
             <br/>
             <hr/>
