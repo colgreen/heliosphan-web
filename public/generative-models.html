@@ -25,12 +25,12 @@
             <br />
             <p>
                 Consider a very simple generative model consisting of a single variable B representing the probability of a biased coin toss landing heads up.
-                We are given a data set consisting of a sequence of actual coin flips and are tasked with fitting the model to the data, i.e. finding 
-                the value of B that best represents the data (or more specifically, that best represents the system from which the data was sampled).
+                We're given a large data set of recorded coin flips and are tasked with fitting the model to the data, i.e. finding the value of B that best
+                represents the data (or more specifically, that best represents the system from which the data was sampled).
             </p>
             <p>
-                We're given a large data set of recorded coin flips in which there is a 75% / 25% distribution between heads and tails respectively, we therefore conclude that 
-                the optimal value for our model variable B is 0.75:
+                The data set exhibits a 75% / 25% distribution between heads and tails respectively, we therefore conclude that the optimal value for our model
+                variable B is 0.75:
             </p>
             <p>$ \hat{\Bbb E}[B] = \frac{N_{heads}}{N} \tag{1}$</p>
             <p>I.e. The proportion of flips that are heads gives the estimate 0.75 for the expected value of B.</p>
@@ -41,9 +41,7 @@
             </blockquote>
             <p>$ B = \frac{N_{heads} + 1}{N + 2} \tag{2}$</p>
             <blockquote>
-                <p>
-                    <i>(see <a href="estimating-biased-coin.html">Estimating a Biased Coin</a> for a derivation).</i>
-                </p>
+                <p><i>See <a href="estimating-biased-coin.html">Estimating a Biased Coin</a> for a derivation.</i></p>
                 <p><i>Suffice to say that for large N the estimate of B based on a simple ratio is a good one, but poor for very small values of N.</i></p>
             </blockquote>
             <p>
@@ -184,10 +182,11 @@
             </p>
 
             <br/>
-            <p>Colin,
-                <br/>
-                August 27th, 2016
-            </p>
+            <p><em>
+                Colin,
+                <br />
+                August 27, 2016
+            </em></p>
             <br/>
             <hr />
             <div>
