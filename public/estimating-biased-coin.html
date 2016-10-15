@@ -471,8 +471,6 @@ li {
     # Generate plot with all six likelihood functions.
     ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = f1, aes(colour="h=1, t=1"))+ stat_function(fun = f2, aes(colour="h=2, t=2")) + ggtitle("L(B|S)") + xlab("B") + ylab("P(S|B)") + theme(legend.title=element_blank())
             </code></pre>
-
-            <br />
             <br />
             <p><i>
                 Colin,
