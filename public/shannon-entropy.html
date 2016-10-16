@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Shannon Entropy</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75" />
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['`','`'], ['\\(','\\)']]},
+        });
+    </script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>    
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen" />
+</head>
+
+<body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+        <div class="articlebodyinner">
+            <br/>
+            <h1 align="center">Shannon Entropy</h1>
+            <br />
+            <p>
+                Shannon entropy is defined for a given probability distribution; it measures how much information is required, on average, 
+                to identify a randomly chosen element from that distribution.
+            </p>
+            <p>
+                Consider a coin with probability B (for bias) of flipping heads. We flip coins in a sequence 
+                (known as the <a href="https://en.wikipedia.org/wiki/Bernoulli_process">Bernoulli process</a>) and transmit each outcome to a reciever. 
+                We can represent the outcome of each flip with a binary 1 (heads) or 0 (tails), therefore on average it takes one bit of information
+                to transmit one coin flip. Note that this method works regardless of the value of B, and therefore B does not need to be known by the 
+                sender or receiver.
+            </p>
+            <p>
+                Intuitively, if B is known and is exactly one half (i.e. a fair coin) then both outcomes are equally likely and it is still necessary to
+                send 1 bit per coin flip. If however B is exactly 0 or 1 then no bits need to be transmitted at all; if B is known to the receiver
+                then it can recreate an infinite sequence of coin flips that exactly matches the actual coin. 
+            </p> 
+            <p>
+                Shannon entropy provides a number of bits, on average, required to transmit coin flip outcomes. It gives the correct result for our intuitively
+                examples above, but also deals with values of B other than 0, 0.5 and 1. E.g. consider, if B is very close to 1 then we will be transmitting mostly 
+                1s, and that intuitively seems inefficient; but in order to know how inefficient we need to understand what the most efficient way of transmitting 
+                coin flips is for these other values of B. 
+            </p>
+            <p>
+                If we consider sequences of coin flips, we can obtain the probability of any given sequence S consisting of h head and t tail flips, with 
+                (from <a href="estimating-biased-coin.html">Estimating a Biased Coin</a>):
+            </p>
+            <p>
+                <p>$$ P(S|B) = B^h (1-B)^t \tag{1}$$</p>
+            </p>
+            <p>I.e. for values of B other than 0, 0.5 and 1, different sequences have different probabilities of occuring; e.g. for B=0.75:</p>
+            <p>
+                \begin{align}
+                P(HH) &= 9/16 \\
+                P(HT) &= 3/16 \\
+                P(TH) &= 3/16 \\
+                P(TT) &= 1/16 \\
+                \end{align}
+            </p>
+            <p>
+                It's perhaps sensible to try and allocate bit sequences (codes) to these combinations based on their probability, such that more probable
+                sequences have shorter codes (as per <a href="https://en.wikipedia.org/wiki/Huffman_coding">Huffman coding</a>), and therefore on average we 
+                send less bits per coin flip. Applying huffman coding we obtain these codes:
+            </p>
+            <p>
+                \begin{align}
+                HH &= 0 \\
+                HT &= 10 \\
+                TH &= 110 \\
+                TT &= 111 \\
+                \end{align}
+            </p>
+            <p>
+                We can now calculate how many bits we need to send, on average, per coin flip. This is done by multiplying each sequence's code length
+                with the probability of that seqeunce occuring, and summing over all four sequences. 
+            </p>
+            <p>
+                \begin{align}
+                AverageBitsPerSequence = & P(HH) \times 1 \text{ bit } +  \\
+                                         & P(HT) \times 2 \text{ bits } + \\
+                                         & P(TH) \times 3 \text{ bits } + \\
+                                         & P(TT) \times 3 \text{ bits}    \\[1em]
+
+                                       = & 1.6875 \text{ bits}
+                \end{align}
+            </p>
+            <p>
+                So our simple coding scheme requires 1.6875 bits on average to transmit the outcome of two coin flips, or 0.84375 bits per coin flip.
+                Essentially we've used knowledge of the coin's bias to reduce the amount of information required to transmit each flip outcome to a receiver.
+                Noting that for this to work the transmitter needs to know B in order to devise the coding scheme, and the receiver needs to know the coding 
+                scheme in order to decode the codes back into coin flip sequences.
+            </p>
+            <p>
+                This method of multiplying a code length by its probability, and summing over all codes in a coding scheme to obtain an average number of
+                bits per coin flip, this is essentially what the Shannon entropy equation is doing. The Shannon Entropy equation:
+            </p>
+            <p>
+                $$  H(X) = -\sum{P(x)\log(P(x))} \tag{Shannon entropy} $$
+            </p>
+            <p>
+                H() is just the convention used to represent Shannon entropy; this is the value that is our average number of bits. We can clarify further
+                by applying this <a href="https://en.wikipedia.org/wiki/List_of_logarithmic_identities">logarithm law</a>:
+            </p>
+            <p>
+                $$ -\log{x} = \log{1/x} $$
+            </p>
+            <p>
+                Giving:
+            </p>
+            <p>
+                $$  H(X) = \sum{P(x)\log(\frac{1}{P(x)})} \tag{Shannon entropy} $$
+
+            </p>
+
+
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+This average number of bits per coin flip is what 
+                Shannon entropy is, so we use the convention H for Shannon entropy:
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <p>
+                
+            </p>    
+            <p>
+                Now consider two extreme cases; if B=0 or B=1, <i>and</i> the value of B is known, then we don't need to send any bits at all. With no additional
+                information the receiver is capable of recreating an infinite sequence of coin flips that exactly match the real coin. So our original system of sending
+                1 bit per flip is highly (infinitely!) inefficient for B=0 and B=1. 
+            </p>
+
+            <p>
+                So what about other values of B? For B=0.5 either outcome could occur with equal probability, so we could say that the coin has maximum unpredicatability;
+                and intuitively we understand that it's necessary to transmit 1 bit per outcome. How about for B=0.75?
+            </p>
+
+
+
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+
+
+                If the coin is fair (i.e. `B=1/2`) then we can clearly transmit each coin toss with 1 bit
+                
+                
+                , and <i>known</i> to be fair, then we can set up communication channel that, on average,
+                requires 1 bit to transmit each coin toss.  
+                
+                
+                 the the amount of information in each flip is 1 bit, i.e. if we wished to somehow transmit the series of outcomes over
+                some communication channel, then on average we need to send at least 1 bit of information for each coin flip. This is assuming that we set up the 
+                communication channel knowing B's value; if we didn't know B then    
+            </p>
+            <blockquote>
+                <i>NB</i>. Shannon entropy is a measure of how much information is required <i>on average</i>. It just so happens that for a fair coin each bit we transmit 
+                corresponds exactly with one coin flip.
+            </blockquote>
+            <p>
+                Consider a biased coin (i.e. `B \neq 1/2`); how many bits on average do we need to transmit to communicate a sequence of flips to the receiver? We
+
+            </p>
+
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <p>
+
+                Let's say we want to send short text messages over a digital communication channel, e.g. the internet. Let's constrain our
+                messages to the 26 letters of the alphabet and upper case only, so our messages are made up of 26 different
+                symbols.
+            </p>
+            <p>It's a digital channel so we can only send ones and zeros.</p>
+            <p>To represent our 26 symbols in binary form we devise a scheme whereby we allocate each symbol a code, like
+                so:</p>
+
+            <table border="1" cellspacing="0" cellpadding="5" align="center">
+                <tr>
+                    <th>Binary Code</th>
+                    <th>Letter</th>
+                </tr>
+                <tr>
+                    <td>00000</td>
+                    <td>A</td>
+                </tr>
+                <tr>
+                    <td>00001</td>
+                    <td>B</td>
+                </tr>
+                <tr>
+                    <td>00010</td>
+                    <td>C</td>
+                </tr>
+                <tr>
+                    <td>00011</td>
+                    <td>D</td>
+                </tr>
+                <tr>
+                    <td>00100</td>
+                    <td>E</td>
+                </tr>
+                </tr>
+                <tr>
+                    <td>etc....</td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <p>So we have 26 binary codes running from 00000 (A) to 11001 (Z). Note that the we're using 5 digit codes in order 
+                to obtain at least 26 distinct values that we can allocate to letters; if just had four digits we could only represent
+                16 symbols (i.e. 2^4 = 16). With five digits we have 2^5 = 32 possible symbols so our coding scheme actually has 6 spare codes.
+                </p>
+
+
+
+
+
+            <br/>
+            <h4>References</h4>
+            [1] <a href="http://www.let.rug.nl/nerbonne/teach/rema-stats-meth-seminar/presentations/Nabende_x_entropy_model_accuracy_2009.pdf">Cross Entropy for Measuring quality in models, Peter Nabende, Alfa Informatica, CLCG, RuG</a>
+            <br/> [2] <a href="http://web.stanford.edu/~montanar/RESEARCH/BOOK/partA.pdf">INTRODUCTION TO INFORMATION THEORY</a>
+            <br/>
+
+            <br/>
+            <br/>
+            <br/>
+            <hr/>
+            <div style="margin-left:10;">
+                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> 2015 Colin Green.<br/>                This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+            Creative Commons
+            Attribution 3.0 License
+          </a>
+                <br/>
+                <br/>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
