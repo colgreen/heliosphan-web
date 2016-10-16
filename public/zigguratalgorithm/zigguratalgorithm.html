@@ -5,6 +5,12 @@
   <title>The Ziggurat Algorithm for Random Gaussian Sampling</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=0.75" />
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['`','`'], ['\\(','\\)']]},
+        });
+    </script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>    
   <link rel="stylesheet" href="../stuff.css" type="text/css" media="screen" />
 </head>
 
@@ -31,12 +37,9 @@
         The Ziggurat Algorithm is a method for efficient random sampling from a probability distribution such as the Gaussian distribution.
         The probability distribution function (pdf) for the Gaussian distribution is given by:
       </p>
-      <div style="margin-left:30px">
-        <img src="gaussian_pdf.png" alt="gaussian pdf" />
-        <p>
-          Where <b>μ</b> is the distribution mean and <b>σ</b> is the standard deviation.
-        </p>
-      </div>
+      <p>$$ y = \frac{1}{ \sqrt{(2 \pi \sigma^2}} \, e^{-\frac{(x-\mu^2)}{2 \sigma^2}}  $$</p>
+      <blockquote>Where <b>μ</b> is the distribution mean and <b>σ</b> is the standard deviation.</blockquote>
+      
       <br/>
       <p>
         Internally the sampling algorithm uses a simplified pdf by using a mean of 0 and a standard deviation (sd) of 1, which allows
@@ -239,10 +242,8 @@
             it remains suitable for sampling from a Gaussian using rejection methods such as the Ziggurat algorithm (it's
             the shape of the curve that matters, not the absolute area under the curve).
           </p>
-          <div style="margin-left:30px">
-            <img src="gaussian_pdf_denormed.png" alt="gaussian pdf" />
-            <p>Simplified and denormalised version of the Gaussian pdf with mean = 0 and s.d. = 1.</p>
-          </div>
+          <p>$$ y = e^{-\frac{x^2}{2}} $$</p>
+          <blockquote>Simplified and denormalised version of the Gaussian pdf with mean = 0 and s.d. = 1.</blockquote>
         </li>
       </ol>
       <br/>
