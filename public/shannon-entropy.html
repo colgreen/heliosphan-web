@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -27,34 +27,38 @@
             <br />
             <p>
                 Shannon entropy is defined for a given probability distribution; it measures how much information is required, on average, 
-                to identify a randomly chosen element from that distribution.
+                to identify a randomly chosen element from that distribution. What does this mean?...
             </p>
             <p>
                 Consider a coin with probability B (for bias) of flipping heads. We flip coins in a sequence 
                 (known as the <a href="https://en.wikipedia.org/wiki/Bernoulli_process">Bernoulli process</a>) and transmit each outcome to a reciever. 
                 We can represent the outcome of each flip with a binary 1 (heads) or 0 (tails), therefore on average it takes one bit of information
-                to transmit one coin flip. Note that this method works regardless of the value of B, and therefore B does not need to be known by the 
+                to transmit one coin flip. Note that this method works regardless of the value of B, and therefore B does not need to be known to the 
                 sender or receiver.
             </p>
             <p>
-                Intuitively, if B is known and is exactly one half (i.e. a fair coin) then both outcomes are equally likely and it is still necessary to
-                send 1 bit per coin flip. If however B is exactly 0 or 1 then no bits need to be transmitted at all; if B is known to the receiver
-                then it can recreate an infinite sequence of coin flips that exactly matches the actual coin. 
+                If B is known and is exactly one half (i.e. a fair coin) then both outcomes are equally likely and it is still necessary to
+                send one bit per coin flip. If B is exactly 0 or 1 then no bits need to be transmitted at all; i.e. the receiver
+                can produce an infinite sequence of coin flips that exactly match the actual coin.
             </p> 
             <p>
-                Shannon entropy provides a number of bits, on average, required to transmit coin flip outcomes. It gives the correct result for our intuitively
-                examples above, but also deals with values of B other than 0, 0.5 and 1. E.g. consider, if B is very close to 1 then we will be transmitting mostly 
-                1s, and that intuitively seems inefficient; but in order to know how inefficient we need to understand what the most efficient way of transmitting 
-                coin flips is for these other values of B. 
+                For values of B other than `0`, `1` and `1/2` there exist schemes for communicating our sequence of coin flips with less than one bit
+                on average per flip, most notably <a href="https://en.wikipedia.org/wiki/Arithmetic_coding">Arithmetic coding</a>, which is near 
+                optimal; and the simpler but generally less efficient <a href="https://en.wikipedia.org/wiki/Huffman_coding">Huffman coding</a>.
             </p>
+
+            <br/>
+            <b>Huffman Coding Example</b>
             <p>
-                If we consider sequences of coin flips, we can obtain the probability of any given sequence S consisting of h head and t tail flips, with 
-                (from <a href="estimating-biased-coin.html">Estimating a Biased Coin</a>):
+                The probability of any given coin flip sequence S consisting of <i>h</i> head and <i>t</i> tail flips, and for a coin with bias B,
+                is given by the following equation (from <a href="estimating-biased-coin.html">Estimating a Biased Coin</a>):
             </p>
+            <p>$$ P(S|B) = B^h (1-B)^t \tag{1}$$</p>
+            <br/>
             <p>
-                <p>$$ P(S|B) = B^h (1-B)^t \tag{1}$$</p>
+                In our example B=`3/4`, and we will consider sequences of just two coin flips; hence there are just four possible sequences. The 
+                probability of each sequence is:
             </p>
-            <p>I.e. for values of B other than 0, 0.5 and 1, different sequences have different probabilities of occuring; e.g. for B=0.75:</p>
             <p>
                 \begin{align}
                 P(HH) &= 9/16 \\
@@ -63,10 +67,11 @@
                 P(TT) &= 1/16 \\
                 \end{align}
             </p>
+            <br/>
             <p>
-                It's perhaps sensible to try and allocate bit sequences (codes) to these combinations based on their probability, such that more probable
-                sequences have shorter codes (as per <a href="https://en.wikipedia.org/wiki/Huffman_coding">Huffman coding</a>), and therefore on average we 
-                send less bits per coin flip. Applying huffman coding we obtain these codes:
+                Huffman coding assigns a code to each sequence such that more probable (frequent) sequences are assigned shorter codes, in an 
+                attempt to reduce the number of bits we need to send on average. Applying the standard Huffman coding scheme we obtain these
+                code allocations:     
             </p>
             <p>
                 \begin{align}
@@ -76,9 +81,10 @@
                 TT &= 111 \\
                 \end{align}
             </p>
+            <br/>
             <p>
-                We can now calculate how many bits we need to send, on average, per coin flip. This is done by multiplying each sequence's code length
-                with the probability of that seqeunce occuring, and summing over all four sequences. 
+                We can now calculate how many bits we need to send, on average, per coin flip, by multiplying each sequence's code length
+                with the probability of that sequence occurring, and summing over all four possible sequences: 
             </p>
             <p>
                 \begin{align}
@@ -90,180 +96,158 @@
                                        = & 1.6875 \text{ bits}
                 \end{align}
             </p>
+            <br/>
             <p>
-                So our simple coding scheme requires 1.6875 bits on average to transmit the outcome of two coin flips, or 0.84375 bits per coin flip.
-                Essentially we've used knowledge of the coin's bias to reduce the amount of information required to transmit each flip outcome to a receiver.
-                Noting that for this to work the transmitter needs to know B in order to devise the coding scheme, and the receiver needs to know the coding 
-                scheme in order to decode the codes back into coin flip sequences.
+                Therefore this coding scheme requires 1.6875 bits on average to transmit the outcome of two coin flips, or 0.84375 bits per coin flip.
+                Essentially, when `B \neq 1/2` we already have some information on what each outcome is likely to be, and therefore less
+                than one bit of information is needed on average to inform the receiver of each flip. 
+            </p> 
+
+            <p>
+                Huffman coding captures some of the possible gains in efficiency but is not optimal in the general case, i.e. there exist more efficient 
+                coding schemes than the one described above. However, our example demonstrates a key aspect of the Shannon entropy equation; that multiplying 
+                each possible sequence's code length by its probability gives the code length we would need to send on average. This averaging over a coding
+                scheme is precisely what the Shannon entropy equation describes:
             </p>
             <p>
-                This method of multiplying a code length by its probability, and summing over all codes in a coding scheme to obtain an average number of
-                bits per coin flip, this is essentially what the Shannon entropy equation is doing. The Shannon Entropy equation:
+                $$  H(X) = -\sum_x{P(x)\log{P(x)}} \tag{Shannon entropy} $$
             </p>
+            <ul style="list-style-type: none">
+                <li>`H()` is the convention/notation used to represent Shannon entropy; this is the value that is our average number of bits.</li>
+                <br/>
+                <li>`X` represents the set of all possible outcomes; in our example this is the four possible sequences.</li>
+                <br/>
+                <li>`x` represents an element of `X`.</li>
+            </ul>
+            <br/>
             <p>
-                $$  H(X) = -\sum{P(x)\log(P(x))} \tag{Shannon entropy} $$
+                We can clarify the equation further by applying the following <a href="https://en.wikipedia.org/wiki/List_of_logarithmic_identities">logarithm law</a>:
             </p>
-            <p>
-                H() is just the convention used to represent Shannon entropy; this is the value that is our average number of bits. We can clarify further
-                by applying this <a href="https://en.wikipedia.org/wiki/List_of_logarithmic_identities">logarithm law</a>:
-            </p>
-            <p>
-                $$ -\log{x} = \log{1/x} $$
-            </p>
+            <p>$$ -\log{x} = \log{\frac{1}{x}} $$</p>
             <p>
                 Giving:
             </p>
+            <p>$$ H(X) = \sum_x{P(x)\log{\frac{1}{P(x)}}} \tag{Shannon entropy} $$</p>
             <p>
-                $$  H(X) = \sum{P(x)\log(\frac{1}{P(x)})} \tag{Shannon entropy} $$
-
+                Note that we have a sum over the product of each outcome's probability and a log term. The only difference between this and the above
+                Huffman coding example is that the code length has been replaced with a log term; why?
             </p>
 
-
-
             <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-This average number of bits per coin flip is what 
-                Shannon entropy is, so we use the convention H for Shannon entropy:
-
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
+            <b>Why Logarithms?</b>
             <p>
-                
-            </p>    
+                Logarithms are inherently a measure of information quantity. Consider transmitting long numbers, e.g. values between 0 and 999,999 (decimal).
+                Each value can take one of out of a million possible states, and yet we can transmit each number with only 6 decimal digits.  Noting that:              
+            </p>
+            <p>$$\log_{10}(1,000,000) = 6$$</p>
             <p>
-                Now consider two extreme cases; if B=0 or B=1, <i>and</i> the value of B is known, then we don't need to send any bits at all. With no additional
-                information the receiver is capable of recreating an infinite sequence of coin flips that exactly match the real coin. So our original system of sending
-                1 bit per flip is highly (infinitely!) inefficient for B=0 and B=1. 
+                Note that the log base matches the number of symbols (0 to 9), and that the result is the number of (decimal) digits needed
+                to encode a number with one million possible states. Hence we can obtain the number of <i>bits</i> needed to encode each number by changing the
+                log base to two:
+            </p>
+            <p>$$ \log_2(1,000,000) \approx 19.93 \text{ bits} $$</p>
+            <p>
+                In the general case we can say that `\log_b{N}` gives a measure of how much information (how many base `b` digits)
+                we need to encode a variable with `N` possible states. E.g. for a coin with two possible outcomes we get:
+            </p>
+            <p>$$ \log_2(2) = 1 \text{ bit} $$</p>
+            <br/>
+
+            <b>Why Reciprocals?</b>
+            <p>The Shannon entropy equation has this reciprocal within the log term:</p>
+            <p>$$ \frac{1}{P(x)} $$ </p>
+            <p>
+                By taking the reciprocal we obtain the number of possible states that could have that probability; we then take the log of that 
+                number of states to obtain how many bits, on average, it would take to distinguish between that many states. Multiplying by the 
+                probability of the state, and summing over all states, gives the Shannon entropy equation.
+            </p>
+            <br/>
+            <b>A Note on Number Bases</b>
+            <p>
+                The Shannon entropy equation is agnostic with regard to logarithm base. Base 2 will give a measure of information stated 
+                in bits, which is a well understood metric and a natural choice when dealing with digital communications. However we can choose any base, e.g.
+                base ten gives us a measure in decimal digits, base 3 in ternary digits, base 16 in hexadecimal digits, and so on. These different amounts
+                obtained by using different log bases are all equivalent in terms of how much information they represent.
+            </p>
+            <p>
+                E.g. in the above example we stated:
+            </p>
+            <p>
+                \begin{align}
+                \log_{10}(1,000,000) &= 6 \text { decimal digits } \\
+                \log_2(1,000,000) &\approx 19.93 \text{ bits (or binary digits) }
+                \end{align}
+            </p>
+            <p>
+                These two scalar measures of information describe an equal quantity of information, noting that:
+            </p>
+            <p>
+            \begin{align}
+            10^6 &= 1,000,000 \\
+            2^{19.93} &\approx 1,000,000 
+            \end{align}
+            </p>
+            <p>
+                So in some sense we can say that information is the ability to identify a states within a set of possible states; and to distinguish between more states 
+                requires more information. In fact <a href="https://en.wikipedia.org/wiki/Arithmetic_coding">Arithmetic coding</a> encodes arbitrarily long messages
+                as a single real number between 0 and 1, with arbitrarily long precision, i.e. a single variable with a great many possible states in which each possible value 
+                represents a different message.
+            </p>
+            <p>
+                In the general case Arithmetic coding results in a near optimal encoding of messages that is very close to the number obtained from the Shannon entropy equation.
+                The Shannon entropy therefore should be considered as a low bound on the amount of information required to encode and send a message.
             </p>
 
+            <br/>
+            <b>Huffman Coding Example (continued)</b>
             <p>
-                So what about other values of B? For B=0.5 either outcome could occur with equal probability, so we could say that the coin has maximum unpredicatability;
-                and intuitively we understand that it's necessary to transmit 1 bit per outcome. How about for B=0.75?
+                Recall that the above Huffman encoding example with `B=3/4` resulted in each coin flip being encoded with 0.84375 bits on average, but that Huffman tends
+                not to result in an optimal encoding. We can now calculate the Shannon entropy for our example to find the number of bits per flip required by 
+                an optimal encoder: 
             </p>
-
-
-
-
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-
-
-                If the coin is fair (i.e. `B=1/2`) then we can clearly transmit each coin toss with 1 bit
-                
-                
-                , and <i>known</i> to be fair, then we can set up communication channel that, on average,
-                requires 1 bit to transmit each coin toss.  
-                
-                
-                 the the amount of information in each flip is 1 bit, i.e. if we wished to somehow transmit the series of outcomes over
-                some communication channel, then on average we need to send at least 1 bit of information for each coin flip. This is assuming that we set up the 
-                communication channel knowing B's value; if we didn't know B then    
-            </p>
-            <blockquote>
-                <i>NB</i>. Shannon entropy is a measure of how much information is required <i>on average</i>. It just so happens that for a fair coin each bit we transmit 
-                corresponds exactly with one coin flip.
-            </blockquote>
             <p>
-                Consider a biased coin (i.e. `B \neq 1/2`); how many bits on average do we need to transmit to communicate a sequence of flips to the receiver? We
+                \begin{align}
+                AverageBitsPerSequence = & P(HH) \times \log_2{\frac{1}{P(HH)}} \, + \\
+                                         & P(HT) \times \log_2{\frac{1}{P(HT)}} \, + \\
+                                         & P(TH) \times \log_2{\frac{1}{P(TH)}} \, + \\
+                                         & P(TT) \times \log_2{\frac{1}{P(TT)}}   \\[1em]
 
+                                       = & \frac{9}{16} \times \log_2{1 \frac{7}{9}} \, + \\
+                                         & \frac{3}{16} \times \log_2{5 \frac{1}{3}} \, + \\
+                                         & \frac{3}{16} \times \log_2{5 \frac{1}{3}} \, + \\
+                                         & \frac{1}{16} \times \log_2{16}              \\[1em]
+
+                                       = & 0.466917186 + 0.452819531 + 0.452819531 + 0.25 \\[1em]          
+
+                                       = & 1.622556248
+                \end{align}
             </p>
-
-
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
             <p>
-
-                Let's say we want to send short text messages over a digital communication channel, e.g. the internet. Let's constrain our
-                messages to the 26 letters of the alphabet and upper case only, so our messages are made up of 26 different
-                symbols.
+                Recalling that we are encoding sequences of two coin flips, thus we divide by two to obtain a final Shannon entropy of:
             </p>
-            <p>It's a digital channel so we can only send ones and zeros.</p>
-            <p>To represent our 26 symbols in binary form we devise a scheme whereby we allocate each symbol a code, like
-                so:</p>
-
-            <table border="1" cellspacing="0" cellpadding="5" align="center">
-                <tr>
-                    <th>Binary Code</th>
-                    <th>Letter</th>
-                </tr>
-                <tr>
-                    <td>00000</td>
-                    <td>A</td>
-                </tr>
-                <tr>
-                    <td>00001</td>
-                    <td>B</td>
-                </tr>
-                <tr>
-                    <td>00010</td>
-                    <td>C</td>
-                </tr>
-                <tr>
-                    <td>00011</td>
-                    <td>D</td>
-                </tr>
-                <tr>
-                    <td>00100</td>
-                    <td>E</td>
-                </tr>
-                </tr>
-                <tr>
-                    <td>etc....</td>
-                    <td></td>
-                </tr>
-            </table>
-
-            <p>So we have 26 binary codes running from 00000 (A) to 11001 (Z). Note that the we're using 5 digit codes in order 
-                to obtain at least 26 distinct values that we can allocate to letters; if just had four digits we could only represent
-                16 symbols (i.e. 2^4 = 16). With five digits we have 2^5 = 32 possible symbols so our coding scheme actually has 6 spare codes.
-                </p>
-
-
-
-
-
-            <br/>
-            <h4>References</h4>
-            [1] <a href="http://www.let.rug.nl/nerbonne/teach/rema-stats-meth-seminar/presentations/Nabende_x_entropy_model_accuracy_2009.pdf">Cross Entropy for Measuring quality in models, Peter Nabende, Alfa Informatica, CLCG, RuG</a>
-            <br/> [2] <a href="http://web.stanford.edu/~montanar/RESEARCH/BOOK/partA.pdf">INTRODUCTION TO INFORMATION THEORY</a>
-            <br/>
-
-            <br/>
-            <br/>
-            <br/>
-            <hr/>
-            <div style="margin-left:10;">
-                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> 2015 Colin Green.<br/>                This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
-            Creative Commons
-            Attribution 3.0 License
-          </a>
-                <br/>
-                <br/>
+            <p>$$ H(X) = 0.811278124 \text{ bits per coin flip} $$</p>
+            <p>
+                Slightly lower than the Huffman encoding figure of 0.84375 bits per coin flip, as expected; i.e. the Huffman coding is
+                not optimal but is near optimal.
+            </p>
+            <br />
+            <p><i>
+                Colin,
+                <br /> October 17th, 2016
+            </i></p>
+            <br />
+            <hr />
+            <div>
+                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2016 Colin
+                Green.
+                <br /> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+                    Creative Commons
+                    Attribution 3.0 License
+                </a>
+                <br />
+                <br />
             </div>
         </div>
     </div>
 </body>
-
 </html>
