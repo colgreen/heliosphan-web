@@ -4,6 +4,12 @@
     <title>Cross Entropy</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['`','`'], ['\\(','\\)']]},
+        });
+    </script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>      
     <link rel="stylesheet" href="stuff.css" type="text/css" media="screen"/>
   </head>
   <body>
@@ -17,28 +23,59 @@
         <br/>
         <h2 align="center">Cross Entropy</h2>
         <br />
-          
+
+        <p>Cross entropy is closely related to <a href="shannon-entropy.html">Shanon Entropy</a>:</p>
+        <blockquote><i>  
+          Shannon entropy is defined for a given discrete probability distribution; it measures how much information is required, on average, 
+          to identify random samples from that distribution.
+        </i></blockquote>
+
+        <p>
+          Shannon entropy does not define any coding scheme, but it does define how much information an optimal coding scheme for 
+          a given distribution would use, on average, to identify random samples from that distribution.
+        </p>
+        <p>
+          Now consider two distributions, `D` and `\bar D`, each over the same set of states (or symbols), but with distinct probabilities assigned to those
+          states (the letter 'D' is re-used to emphasise that these are distributions over the same set of states).
+        </p>
+        <p>
+          Cross entropy is defined for the discrete probability distributiions `D`, `\bar D`; it measures how much information is required, on average,
+          to identify random samples from `\bar D` when using an optimal coding scheme constructed for `D`. To represent this mathematically we substitute
+          `D` and `\bar D` into the Shannon entropy equation: 
+        </p>
+        <p>
+            $$ H(\bar D, D) = - \sum_x{P(\bar D_x) \log{P(D_x)}} \tag{Cross entropy} $$
+        </p>
+        <p>
+          Noting that the log expression in the Shannon entropy equation gives the optimal code length for a given probability, hence `D` is
+          substitued in there (i.e. the optimal coding scheme for `D` is in use); and the lefthand probability expression represents the probability 
+          (or relative frequency) of each state, hence `\bar D` is substitued in there.
+        </p>
 
         <br/>
-        <h4>References</h4>
-        [1] <a href="http://www.let.rug.nl/nerbonne/teach/rema-stats-meth-seminar/presentations/Nabende_x_entropy_model_accuracy_2009.pdf">Cross Entropy for Measuring quality in models, Peter Nabende, Alfa Informatica, CLCG, RuG</a>
-        <br/>
-        [2] <a href="http://web.stanford.edu/~montanar/RESEARCH/BOOK/partA.pdf">INTRODUCTION TO INFORMATION THEORY</a>
-        <br/>
-        
-        <br/>
-        <br/>
-        <br/>
-        <hr/>
-        <div style="margin-left:10;">
-          <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" />
-          2015 Colin Green.<br/>
-          This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
-            Creative Commons
-            Attribution 3.0 License
-          </a>
-          <br/>
-          <br/>
+        <b>Cross Entropy as a Similarity Metric</b>
+        <p>
+          If `\bar D` is identical to `D` then the samples from `\bar D` are encoded optimally. If however `\bar D` differs from `D` then the average
+          amount of information per sample increases above the minimum/optimal level. Or generally, the cross entropy is monotonically increasing with distance
+          between `\bar D` and `D`, as such cross entropy can be considered a measure of similarity (or distance) between two discrete distributions over the same
+          set of states.
+        </p>
+        <br />
+        <p><i>
+            Colin,
+            <br /> October 20th, 2016
+        </i></p>
+        <br />
+        <hr />
+        <div>
+            <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2016 Colin
+            Green.
+            <br /> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
+                Creative Commons
+                Attribution 3.0 License
+            </a>
+            <br />
+            <br />
         </div>
       </div>
     </div>
