@@ -35,7 +35,7 @@
           a given distribution would use, on average, to identify random samples from that distribution.
         </p>
         <p>
-          Now consider two distributions, `D` and `\bar D`, each over the same set of states (or symbols), but with distinct probabilities assigned to those
+          Consider two distributions, `D` and `\bar D`, each over the same set of states (or symbols), but with distinct probabilities assigned to those
           states (the letter 'D' is re-used to emphasise that these are distributions over the same set of states).
         </p>
         <p>
@@ -48,17 +48,25 @@
         </p>
         <p>
           Noting that the log expression in the Shannon entropy equation gives the optimal code length for a given probability, hence `D` is
-          substituted in there (i.e. the optimal coding scheme for `D` is in use); and the left-hand probability expression represents the probability 
+          substituted in (i.e. the optimal coding scheme for `D` is in use); and the left-hand probability expression represents the probability 
           (or relative frequency) of each state, hence `\bar D` is substituted in there.
         </p>
 
         <br/>
         <b>Cross Entropy as a Similarity Metric</b>
         <p>
-          If `\bar D` is identical to `D` then the samples from `\bar D` are encoded optimally. If however `\bar D` differs from `D` then the average
-          amount of information per sample increases above the minimum/optimal level. Or generally, the cross entropy is monotonically increasing with distance
-          between `\bar D` and `D`, as such cross entropy can be considered a measure of similarity (or distance) between two discrete distributions over the same
-          set of states.
+          If `\bar D` is identical to `D` then samples from `\bar D` are encoded optimally. If however `\bar D` differs from `D` then the average
+          amount of information per sample increases above the minimum/optimal level defined by the Shannon entropy. Hence, the difference between the
+          Shannon entropy and the cross entropy can be considered a distance metric with respect to two discrete distributions over the same set of states.
+          The unit of distance is 'information per sample', i.e. the amount of additional information (in whatever units are preferred, e.g. bits, trits, etc.)
+          required, on average, to identify a sample from `\bar D`.
+        </p>
+        <p>
+          When training a generative model to produce a distribution matching some desired target distribution, the above cross entropy based metric
+          is the natural choice and logically correct metric. Justification for this claim relates to redundant information being a fundamental quantity
+          we wish to minimise. I.e. if some model can reproduce a target distribution exactly then that model has encoded everything it is possible to
+          know about the system producing that distribution; if however the cross entropy is higher than the Shannon entropy, that is an indication that
+          the model is wrong to some degree, and the cross entropy describes how much information is required to correct that 'wrongness' (error).
         </p>
         <br />
         <p><i>
