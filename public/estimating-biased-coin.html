@@ -455,11 +455,14 @@ li {
             <pre style="white-space: pre-wrap; background: hsl(50, 100%, 80%);"><code xstyle="background: hsl(220, 80%, 90%);">
     # Define the six likelihood functions.
     f1 <- function(x) x^1 * (1-x)^1
-          f2 <- function(x) x^2 * (1-x)^2
+    f2 <- function(x) x^2 * (1-x)^2
     f3 <- function(x) x^2 * (1-x)^1
     f4 <- function(x) x^5 * (1-x)^1
     f5 <- function(x) x^1 * (1-x)^0
     f6 <- function(x) x^2 * (1-x)^0
+
+    # import ggplot.
+    library("ggplot2")
 
     # Generate the six likelihood function plots.
     ggplot(data.frame(x = c(0, 1)), aes(x)) + stat_function(fun = f1) + ggtitle("L(B|S) for S with h=1,t=1") + xlab("B") + ylab("P(S|B)")
