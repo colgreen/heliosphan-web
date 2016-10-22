@@ -63,10 +63,11 @@
         </p>
         <p>
           When training a generative model to produce a distribution matching some desired target distribution, the above cross entropy based metric
-          is the natural choice and logically correct metric. Justification for this claim relates to redundant information being a fundamental quantity
-          we wish to minimise. I.e. if some model can reproduce a target distribution exactly then that model has encoded everything it is possible to
-          know about the system producing that distribution; if however the cross entropy is higher than the Shannon entropy, that is an indication that
-          the model is wrong to some degree, and the cross entropy describes how much information is required to correct that 'wrongness' (error).
+          is the natural choice and logically correct error metric for use in gradient following methods. Justification for this claim relates to redundant 
+          information being a fundamental quantity we wish to minimise. I.e. if some model can reproduce a target distribution exactly, then that model has
+          encoded everything necessary about the system being modelled in order to recreate the target distribution. If however the cross entropy is
+          higher than the Shannon entropy, that is an indication that the model is wrong to some degree, and the difference describes the scale of that error
+          in the fundamental units of how much information is required it.
         </p>
         <br />
         <p><i>
