@@ -1,0 +1,30 @@
+digraph g {
+  edge [arrowhead=none];
+
+
+  node [shape=circle,width=0.5,fixedsize=true];   
+  subgraph cluster_b {
+    b1 [label=<B<SUB>1</SUB>>,group=b1];
+    b0 [label=<B<SUB>0</SUB>>, group=b0];
+  }
+
+  subgraph  cluster_c {
+
+    c1 [label=<C<SUB>1</SUB>>,group=c1];
+    c0 [label=<C<SUB>0</SUB>>, group=c0];
+  }
+
+  subgraph cluster_d {
+    di [label=<D<SUB>i</SUB>>, group=di];
+    d0 [label=<D<SUB>0</SUB>>,group=d0];
+  }
+
+  b0->d0;  
+  b0->di;
+  b1->d0;  
+  b1->di;
+  c0->d0;  
+  c0->di;
+  c1->d0;  
+  c1->di;
+}

@@ -1,0 +1,17 @@
+digraph g {
+  edge [arrowhead=none];
+
+  node [shape=square,width=0.47,fixedsize=true]; 
+  f0 [label=<F<SUB>0</SUB>>,group=d0];
+  fk [label=<F<SUB>k</SUB>>,group=dk];
+
+  subgraph cluster_0 {
+    node [shape=circle,width=0.55,fixedsize=true]; 
+    d0 [label=<D<SUB>0</SUB>>,group=d0];
+    dk [label=<D<SUB>k</SUB>>,group=dk];
+  }
+
+  edge [weight=10]
+  f0->d0;
+  fk->dk;
+}

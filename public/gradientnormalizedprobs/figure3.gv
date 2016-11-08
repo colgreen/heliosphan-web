@@ -1,0 +1,64 @@
+digraph g {
+  edge [arrowhead=none];
+
+
+  node [shape=circle,width=0.5,fixedsize=true];   
+  subgraph cluster_b {
+    b1 [label=<B<SUB>1</SUB>>];
+    b0 [label=<B<SUB>0</SUB>>];
+  }
+
+  subgraph  cluster_c {
+    c1 [label=<C<SUB>1</SUB>>];
+    c0 [label=<C<SUB>0</SUB>>];
+  }
+
+  graph [style=dashed, color=grey]
+  node [shape=cbox,width=0.5,fixedsize=true];   
+  subgraph cluster_gb {
+    gbi [label=<G<SUB>B,i</SUB>>];
+    gb0 [label=<G<SUB>B,0</SUB>>];
+  }
+  subgraph cluster_gc {
+    gci [label=<G<SUB>C,i</SUB>>];
+    gc0 [label=<G<SUB>C,0</SUB>>];
+  }
+  subgraph cluster_f {
+    f0 [label=<F<SUB>0</SUB>>];
+    fi [label=<F<SUB>i</SUB>>];
+  }
+
+  graph [style="",color=""]
+  node [shape=circle,width=0.5,fixedsize=true];   
+
+edge [penwidth=2.3]
+b0->gb0;
+b0->gbi;
+b1->gb0;
+b1->gbi;
+
+c0->gc0;
+c0->gci;
+c1->gc0;
+c1->gci;
+edge [penwidth=""]
+
+gb0->f0;
+gbi->fi;
+gc0->f0;
+gci->fi;
+
+  subgraph cluster_d {
+    di [label=<D<SUB>i</SUB>>];
+    d0 [label=<D<SUB>0</SUB>>];
+  }
+
+f0->d0;
+fi->di;
+
+
+
+
+
+
+}
