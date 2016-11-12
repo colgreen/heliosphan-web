@@ -59,15 +59,12 @@
           amount of information per sample increases above the minimum/optimal level defined by the Shannon entropy. Hence, the difference between the
           Shannon entropy and the cross entropy can be considered a distance metric with respect to two discrete distributions over the same set of states.
           The unit of distance is 'information per sample', i.e. the amount of additional information (in whatever units are preferred, e.g. bits, trits, etc.)
-          required, on average, to identify a sample from `\bar D`.
+          required, on average, to identify a sample from `\bar D`. As such, cross entropy is the definitive measure of quality for a generative model.
         </p>
-        <p>
-          When training a generative model to produce a distribution matching some desired target distribution, the above cross entropy based metric
-          is the natural choice and logically correct error metric for use in gradient following methods. Justification for this claim relates to redundant 
-          information being a fundamental quantity we wish to minimise. I.e. if some model can reproduce a target distribution exactly, then that model has
-          encoded everything necessary about the system being modelled in order to recreate the target distribution. If however the cross entropy is
-          higher than the Shannon entropy, that is an indication that the model is wrong to some degree, and the difference describes the scale of that error
-          in the fundamental units of how much information is required to correct it.
+        <p>I.e. if some model can reproduce a desired target distribution exactly then that model has encoded everything necessary about the system
+           being modelled in order to recreate the target distribution. If however the cross entropy is higher than the target distribution's Shannon entropy,
+           that is an indication that the model is wrong to some degree, and the difference describes the scale of that error in the fundamental units of how 
+           much information is required to correct it.
         </p>
         <br />
         <p><i>
