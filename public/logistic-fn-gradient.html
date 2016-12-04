@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Logistic Function Gradient</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75" />
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+    });
+    </script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen" />
+</head>
+<body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+        <div class="articlebodyinner">
+            <br />
+            <h2 align="center">Logistic Function Gradient</h2>
+            <br />
+            <p>
+                The <a href="https://en.wikipedia.org/wiki/Logistic_function">logistic function</a> has historically been the de facto choice of neuron activation
+                function in neural networks. In particular, when training a network with <a href="https://en.wikipedia.org/wiki/Backpropagation">backpropagation</a>
+                a non-linear activation function with an easily computable gradient (first derivative) is required. The logistic function is especially suited
+                to this requirement; its gradient is trivially simple to calculate given the value of the function at a given point (which typically will have already
+                been calculated in a backprop downward pass).  
+            </p>            
+            <p>The logistic function (sigmoid):</p>
+            <p>$$ \sigma(x) = \frac{1}{1 + e^{-x}} $$</p>
+
+            <p>Gradient derivation (first derivative):</p>
+                
+            \begin{align}
+                       g &= e^{-x} \\[1.5em] 
+
+                       \sigma &= \frac{1}{1 + g} \\[1.5em]
+
+            \partial_x \sigma &= \partial_x \frac{1}{1 + g} \\[1.5em]
+
+                         &= \partial_x (1 + g)^{-1} \\[1.5em]
+
+                         &= \partial_g x \cdot \partial_{\sigma} g  \,\,\,\,\,\,\,\, \text{(chain rule)} \\[1.5em]
+
+                         &= -e^{-x} \cdot -(1+g)^{-2} \\[1.5em]
+
+                         &= e^{-x} \cdot (1+e^{-x})^{-2} \\[1.5em]
+
+                         &= e^{-x} \cdot \frac{1}{(1+e^{-x})^2} \\[1.5em]
+
+                         &= \frac{e^{-x}}{(1+e^{-x})^2} \\[1.5em]
+
+                         &= \frac{(1 + e^{-x}) - 1}{(1+e^{-x})^2} \\[1.5em]
+
+                         &= \frac{1}{1+e^{-x}} - \frac{1}{(1+e^{-x})^2} \\[1.5em]
+
+                         &= \frac{1}{1+e^{-x}} \left[1 - \frac{1}{1+e^{-x}}\right] \\[1.5em]
+
+            \partial_x \sigma &= \sigma [1 - \sigma] \\[1.5em]
+            \end{align}
+            </p>
+            <br/>
+            <br/>
+            <hr/>
+            <figure style="max-width:460px">
+                <img src="logistic-fn/logistic-fn.png" />
+            </figure>
+            <br/>
+
+            <hr />
+            <b id="ggplot2Commands">ggplot2 commands for plot</b>
+            <pre style="white-space: pre-wrap; background: hsl(50, 100%, 80%);"><code xstyle="background: hsl(220, 80%, 90%);">
+    # Define logistic fn and it's first derivative.
+    f1 <- function(x) 1 / (exp(-x)+1)  
+    f2 <- function(x) f1(x)*(1-f1(x))
+
+    # import ggplot.
+    library("ggplot2")
+
+    # generate plot
+    ggplot(data.frame(x = c(-10, 10)), aes(x)) + stat_function(fun = f1, aes(colour="y=f(x)"))+ stat_function(fun = f2, aes(colour="y=f'(x)")) + ggtitle("Logistic function and Gradient") + xlab("x") + ylab("y") + theme(legend.title=element_blank())
+            </code></pre>
+            <br/>
+
+            <p><em>
+                Colin,
+                <br />
+                December 4th, 2016
+            </em></p>
+            <br/>
+            <hr />
+            <div>
+                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2016 Colin
+                Green.<br /> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">Creative Commons
+            Attribution 3.0 License
+                </a>
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
