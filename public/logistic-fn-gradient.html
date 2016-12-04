@@ -26,14 +26,14 @@
             <p>
                 The <a href="https://en.wikipedia.org/wiki/Logistic_function">logistic function</a> has historically been the de facto choice of neuron activation
                 function in neural networks. In particular, when training a network with <a href="https://en.wikipedia.org/wiki/Backpropagation">backpropagation</a>
-                a non-linear activation function with an easily computable gradient (first derivative) is required. The logistic function is especially suited
+                a non-linear activation function with an easily computable gradient is required. The logistic function is especially suited
                 to this requirement; its gradient is trivially simple to calculate given the value of the function at a given point (which typically will have already
-                been calculated in a backprop downward pass).  
+                been calculated in a backprop forward pass).  
             </p>            
             <p>The logistic function (sigmoid):</p>
             <p>$$ \sigma(x) = \frac{1}{1 + e^{-x}} $$</p>
 
-            <p>Gradient derivation (first derivative):</p>
+            <p>Gradient derivation:</p>
                 
             \begin{align}
                        g &= e^{-x} \\[1.5em] 
