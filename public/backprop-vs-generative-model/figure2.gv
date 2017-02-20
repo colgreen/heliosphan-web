@@ -1,0 +1,14 @@
+digraph g {
+  edge [arrowhead=none];
+  graph [ranksep=0.75];
+
+  node [shape=square,width=0.5,fixedsize=true];   
+ 
+  x0 [label=<<O>x</O><SUB>0</SUB>>];
+  x1 [label=<<O>x</O><SUB>1</SUB>>];
+  y [label=<<O>y</O>>];
+    
+  edge [arrowhead=open, arrowsize=0.7]
+  x0 -> y [label=<w<SUB>0</SUB>>];
+  x1 -> y [label=<w<SUB>1</SUB>>];
+}

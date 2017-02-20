@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>A Brief Exploration of the Possible Equivalence Between the Backpropagation Network and a Generative Binary Stochastic Graphical Model</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=0.75" />
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+    });
+    </script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>
+
+    <style>
+    figure {
+        text-align: center;
+        margin: 10px auto;
+    }
+    table.notationTable {
+        border-spacing:1em;   
+    }    
+    ul {list-style-type: none; margin: 10px 0;}
+    li {margin: 20px 0;}   
+    </style>
+
+
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen" />
+</head>
+<body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+        <div class="articlebodyinner">
+            <br />
+            <h2 align="center">A Brief Exploration of the Possible Equivalence Between the Backpropagation Network and a Generative Binary Stochastic Graphical Model</h2>
+            <br/>
+            <b>A Generative Binary Stochastic Graphical Model</b>
+            <p>
+                Consider a <a href="https://en.wikipedia.org/wiki/Generative_model">generative</a> <a href="https://en.wikipedia.org/wiki/Graphical_model">graphical model</a>
+                consisting of probabilistic bi-state (on or off) variables; each variable contains two nodes, one for each of the two possible states.
+            </p>
+            <p>
+                The variables are arranged into top-down layers; each 'on' node also has a set of implied probabilities
+                for all of the nodes (and therefore all of the variables) in the next layer down. Thus, a variable sends 
+                a vector of implied probabilities to the next layer only when in its 'on' state.
+            </p>
+            <p>
+                It follows that nodes receive implied probabilities from the layer immediately above, apart from nodes in the top layer
+                that have probabilities directly assigned, which are effectively inputs to the model. Alternatively, actual binary states 
+                can be applied to the top layer nodes; either way, the nodes in all other layers always receive an implied probability 
+                from above.
+            </p>
+            <p>
+                A top-down pass consists of sampling binary states for the variables in a layer from their implied probabilities; propagating
+                implied probabilities to the next layer, and repeating until the bottom layer is reached. The states observed at the bottom layer,
+                and their distribution, are the model outputs.
+            </p>
+            <p>
+                Note that a node may receive zero, one or multiple implied probabilities from above, therefore some means of integrating
+                those probabilities is required in order to arrive at a final probability for the owning variable to sample from. 
+                It is also assumed that there is no guarantee that the implied probabilities of the two nodes within each variable will sum to one,
+                therefore the probabilities are normalised.
+            </p>
+            <p> 
+                Consider two connected layers `X` and `Y` in which the state of the variables in layer `X` and their associated 
+                implied probabilities for layer `Y` determine the state of a single variable `y_0` in layer `Y`. 
+            </p>
+            <br/>
+            <figure>
+                <img src="backprop-vs-generative-model/figure1.svg" />
+                <figcaption>Figure 1.<br/>
+                Two variables `x_0`, `x_1` in layer `X` (top) send implied probabilities<br/>
+                to the nodes of a single variable `y_0` in layer `Y` (bottom).</figcaption>
+            </figure>
+            <br/>
+
+            <p>Notation:</p>
+            <blockquote>
+                <table class="notationTable">
+                    <tr><td>$X, Y$ &nbsp; </td><td>Layers `X` and `Y`.</td></tr>
+                    <tr><td><hr/></td><td><hr/></td></tr>
+
+                    <tr><td>$x_i$ &nbsp; </td><td>The variables in layer `X`.</td></tr>
+                    <tr><td>$x_{i,j}$ &nbsp; </td><td>The `j` nodes/states that make up variable `x_i`.</td></tr>
+                    <tr><td>$P(x_i)$ &nbsp; </td><td>The probability that variable `x_i` is in its on state (state 0).</td></tr>
+                    <tr><td><hr/></td><td><hr/></td></tr>
+
+                    <tr><td>$y_0$ &nbsp; </td><td>The single variable in layer `Y`.</td></tr>
+                    <tr><td>$y_{0,j}$ &nbsp; </td><td>The `j` nodes/states that make up variable `y_0`.</td></tr>
+                    <tr><td>$Q(y_{0,j})$</td><td>The non-normalised probability that variable `y_0` is in state `j`. Calculated per downward pass (i.e. per model sample).</td></tr>
+                    <tr><td>$Q_0, Q_1$ &nbsp; </td><td>Aliases for `Q(y_{0,0})` and `Q(y_{0,1})`.</td></tr>
+                    <tr><td>$P(y_0)$</td><td>The probability that variable `y_0` is in its on state. Calculated per downward pass (i.e. per model sample).</td></tr>
+                    <tr><td><hr/></td><td><hr/></td></tr>
+
+                    <tr><td>$u_{i,j}$ &nbsp; </td><td>The implied probability from node `x_{i,0}` to node `y_{0,j}`.</td></tr>
+                </table>       
+            </blockquote>
+            <br/>
+
+            <p>
+                In a single downward pass of the model (a single model sample), the implied probabilities arriving at each `y_{0,j}` are combined
+                by taking their product (noting that the <a href="https://en.wikipedia.org/wiki/Empty_product">empty product</a> has value 1), giving
+                the non-normalised probabilities `Q_0`, `Q_1`:
+            </p>
+            <br/>
+            \begin{align}
+            Q_0 = \prod_{i:x_i = on} u_{i,0} \tag{1} \\[1em]
+            Q_1 = \prod_{i:x_i = on} u_{i,1} \tag{2} \\[1em]
+            \end{align}
+            <br/>
+
+            <p>
+                Or equivalently (assuming the $x_i$ have values 0, 1 when off and on respectively):
+            </p>
+            \begin{align}
+            Q_0 = \prod_i u_{i,0}^{x_i} \tag{3} \\[1em]
+            Q_1 = \prod_i u_{i,1}^{x_i} \tag{4} \\[1em]
+            \end{align}
+
+
+            <p>
+                Normalising to obtain $P(y_0)$:
+            </p>
+            $$ P(y_0) = \frac{Q_0}{Q_0 + Q_1} \tag{5} $$
+            <br/>
+
+            <p>Re-arranging equation (3):</p>
+            
+            \begin{align}
+
+            P(y_0) &= \left[\frac{Q_0 + Q_1}{Q_0}\right]^{-1}  \\[1em]
+
+            &= \left[1 + \frac{Q_1}{Q_0}\right]^{-1} \\[1em]
+
+            &= \left[1 +  e^{\log \frac{Q_1}{Q_0}} \right]^{-1}  \\[1em]
+
+            P(y_0) &= \left[1 +  e^{-\log \frac{Q_0}{Q_1}}    \right]^{-1} \tag {6}
+
+            \end{align}
+            <br/>
+
+            <p>
+                The logistic function (sigmoid) has the form:
+            </p>
+            <p>$$ \sigma(x) = \frac{1}{1 + e^{-x}} $$</p>
+            <br/>
+            <p>Therefore:</p>
+
+            $$P(y_0) = \sigma \left(\log \frac{Q_0}{Q_1} \right) \tag{7} $$ 
+
+            <br/>
+            <br/>
+            <hr/>
+            <br/>
+
+            <b>The Backpropagation Network</b>
+            <p>
+                Now consider a traditional backpropagation network with logistic sigmoid activation function at the nodes. Use of the logistic
+                function results in nodes with an activation level range of [0,1] which we can interpret as the probability that a node is in
+                an 'on' state.
+            </p>
+            <p>
+                Our backprop network consists of two layers `X` and `Y`, in which the state of the variables in layer `X`
+                and their associated connection weights `w_i`,  determine the state of a single variable `\bar y` in layer `Y`.
+            </p>
+            <figure>
+                <img src="backprop-vs-generative-model/figure2.svg" />
+                <figcaption>Figure 2.<br/>
+                A backprop network in which two nodes in layer `X` (top) send activation signals through<br/> 
+                weighted connections `w_0`, `w_1` to the nodes of a single node `\bar y` in layer `Y` (bottom).</figcaption>
+            </figure>
+            <br/>
+
+            <p>
+                The activation level of `\bar y` is given by:
+            </p>
+            $$ \bar y = \sigma \left(\sum_i \bar x_i w_i \right) \tag{8}$$
+            <br/>
+
+            <p>
+                If we interpret `\bar y` as being the probability that node `\bar y` is in an on state, then we can consider 
+                possible equivalency between the backprop model of figure 2 with the probabilistic model of figure 1.
+            </p>
+
+            \begin{align}
+            \sigma \left(\sum_i \bar x_i w_i \right) &= \sigma \left(\log \frac{Q_0}{Q_1} \right) \tag{9} \\[1em]
+            \sum_i \bar x_i w_i &= \log \frac{Q_0}{Q_1} \tag{10} \\[1em]
+            \end{align}
+            <br/>
+            
+            <p>
+                Substituting in (3) and (4):
+            </p>
+
+            \begin{align}
+            
+            \sum_i \bar x_i w_i &= \log \frac{\prod_i u_{i,0}^{x_i}}{\prod_i u_{i,1}^{x_i}} \tag{11} \\[1em]
+
+            &= \log \prod_i u_{i,0}^{x_i} - \log \prod_i u_{i,1}^{x_i} \tag{12} \\[1em]
+
+            &= \sum_i \log u_{i,0}^{x_i} - \sum_i \log u_{i,1}^{x_i} \tag{13} \\[1em]
+
+            &= \sum_i (x_i \log u_{i,0}) -  \sum_i (x_i \log u_{i,1}) \tag{14} \\[1em]
+
+            &= \sum_i x_i (\log u_{i,0} - \log u_{i,1}) \tag{15} \\[1em]
+            
+            \sum_i \bar x_i w_i &= \sum_i x_i \log \frac{u_{i,0}}{u_{i,1}} \tag{16} \\[1em]
+
+            \end{align}
+
+            <br/>
+            <p>
+                Hence the two models are equivalent in the specific context of a single top-down pass of binary input states. Specifically, 
+                each $w_i$ connection weight in the backprop model is equivalent to the <a href="https://wiki.lesswrong.com/wiki/Log_odds">log odds</a> 
+                (log of the <a href="https://wiki.lesswrong.com/wiki/Odds_ratio">odds ratio</a>) of the probabilities $u_{i,0}, u_{i,1}$
+            </p>
+
+            <p>
+                However, the equivalence does not appear to hold for the wider model, i.e. e.g. equation (16) does not equate to the expected value of
+                $P(y_0)$ for a given input vector in the binary stochastic model.
+            </p>
+
+            <br/>
+            <br/>
+            <hr/>
+            <br/>
+
+            <b>Addendum 1: Expected Response of the Binary Stochastic Model</b>
+
+            <p>
+                The estimated value of $Q_i$ can be obtained by enumerating all possible combinations of the $x_i$, hence for two $x_i$ we get:
+            </p>
+            \begin{align}
+            \Bbb E[Q_i] &= P(x_0)P(x_1)u_{0,1}u_{1,1} \\[1em]
+                        &= P(x_0)[1-P(x_1)]u_{0,i} \\[1em]
+                        &= P(x_1)[1-P(x_0)]u_{1,i} \\[1em]
+                        &= [1-P(x_0)][1-P(x_1)] \tag{17}
+            \end{align}
+            <br/>
+
+            <p>
+                Which simplifies and generalises to (i.e. for any number of $x_i)$:
+            </p>
+            \begin{align}
+            \Bbb E[Q_i] &= \prod_j P(x_j)u_{j,i} - [1-P(x_j)] \\[1em]
+                        &= \prod_j P(x_j)u_{j,i} + P(x_j) - 1 \\[1em]
+                        &= \prod_j P(x_j)[u_{j,i} + 1] - 1 \tag{18}
+            \end{align}
+            <br/>
+
+            <p>
+                Alternatively, the geometric mean of $Q_i$ (the geometric expectation?) is given by the rather more elegant (and possibly more relevant):
+            </p>
+            $$ GM[Q_i] = \prod_j {u_{j,i}}^{P(x_j)} \tag{19}$$            
+            <br/>
+
+            <p>
+                Moving on to the expected value of $y_0$:
+            </p>
+            $$ \Bbb E[y_0] = \Bbb E\left[\frac{Q_0}{Q_0 + Q_1}\right] \tag{20}$$
+            <br/>
+
+            <p>
+                The quotient in (20) is problematic, not least because the dividend and divisor are not independent (because $Q_0$ is present in both);
+                otherwise we may at least have been able to factorise into $\Bbb E[Q_0] \Bbb E[1/(Q_0+Q_1)]$, i.e. the expectation of a product is equal
+                to the product of the expectations; although even that would leave the potentially problematic expectation of a quotient.
+            </p>
+
+            <p>
+                Nonetheless, for two $x_i$ we can enumerate the four possible combinations of outcomes (as per equation (17)). Giving:
+            </p>
+            <br/>
+            \begin{align}
+            
+            \Bbb E[y_0] = & P(x_0)P(x_1)\frac{u_{0,0}u_{1,0}}{u_{0,0}u_{1,0} + u_{0,1}u_{1,1}} \\[1em]
+                        + & P(x_0)[1-P(x_1)]\frac{u_{0,0}}{u_{0,0} + u_{0,1}} \\[1em]
+                        + & P(x_1)[1-P(x_0)]\frac{u_{1,0}}{u_{1,0} + u_{1,1}} \\[1em]
+                        + & [1-P(x_0)][1-P(x_1)]\frac{1}{2} \tag{21}
+            \end{align}
+            <br/>
+            <p>
+                For which there is no obvious (to me) factorisation, simplification or generalisation to $n$ $x_i$.
+            </p>
+            <p>
+                The geometric expectation of `y_0` for two `x_i`:
+            </p>
+            \begin{align}
+            GM[y_0] = \left(\frac{u_{0,0}u_{0,1}}{u_{0,0}u_{0,1} + u_{1,0}u_{1,1}}\right)^{P(x_0)P(x_1)}  
+                      \left(\frac{u_{0,0}}{u_{0,0} + u_{0,1}}\right)^{P(x_0)[1-P(x_1)]}
+                      \left(\frac{u_{1,0}}{u_{1,0} + u_{1,1}}\right)^{P(x_1)[1-P(x_0)]} \tag{22}
+            \end{align}
+            <br/>
+            <p>
+                We can at least express these enumerations over combinations of $x_i$ more compactly by defining an enumeration notation:
+            </p>
+            <blockquote>
+                <table class="notationTable">
+                    <tr><td>$[n]$ &nbsp; </td><td>The set of all indexes into `x_i`, i.e. for $n$ $x_i$ we get $[n] = \{0,1,...,n\}$.</td></tr>
+                    <tr><td>$\mathcal{S}_k([n])$ &nbsp; </td><td>The set of all unique subsets of size `k` within $[n]$, i.e. the set of all possible combinations rather than permutations (for which order matters).</td></tr>
+                    <tr><td>$\mathcal{S}_k^i([n])$ &nbsp; </td><td>The $i$th subset.</td></tr>
+                    <tr><td>$\mathcal{S}_k^i$ &nbsp; </td><td>Shorthand/alias for $\mathcal{S}_k^i([n])$</td></tr>
+                    <tr><td>$s : \mathcal{S}_k$ &nbsp;</td><td>Enumeration of the subsets defined by $\mathcal{S}_k$</td></tr>
+                    <tr><td>$s, \hat s : \mathcal{S}_k$ &nbsp;</td><td>Parallel enumeration of the subsets defined by $\mathcal{S}_k$, and the complement of each subset. I.e. for a given subset $s$ of the `x_i` that are in the on state, $\hat s$ gives the remaining set of `x_i` that are in the off state.</td></tr>
+                </table>
+            </blockquote>
+
+            <p>
+                Equation (22) can now be generalised to $n$ $x_i$:
+            </p>
+            $$ GM[y_0] = \prod_{s:\mathcal S_k} \left[\frac{\prod_{i:s}u_{0,i}}{\prod_{i:s}u_{0,i} + \prod_{i:s}u_{1,i}} \right] ^ {\prod_{i:s} P(x_i) \prod_{j:\hat s} P(x_j)} \tag{23}$$
+
+            <hr />
+            <br />
+            <br />
+            <b>Addendum 2: Explanation of Why the Two Models Cannot Be Functionally Equivalent</b>
+            <p>
+                In a nutshell, the generative model is a richer model than the backprop model because for a given input vector we obtain a distribution of outputs rather 
+                than the single output vector response of the backprop model. The distribution of outputs is essentially a set of combinations of outputs 
+                (on and off combinations of the variable in Y) and their relative frequency of occurrence, hence any direct equivalence was only ever going to hold for a single
+                $y_i$ at best.
+            </p>
+
+            <br/>
+            <p><em>
+                Colin,
+                <br />
+                February 20th, 2017
+            </em></p>
+            <br/>
+            <hr />
+            <div>
+                <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2017 Colin
+                Green.<br /> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">Creative Commons
+            Attribution 3.0 License
+                </a>
+                <br />
+                <br />
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

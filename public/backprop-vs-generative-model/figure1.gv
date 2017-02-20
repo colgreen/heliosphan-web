@@ -1,0 +1,31 @@
+digraph g {
+  edge [arrowhead=none];
+  graph [ranksep=0.75];
+
+  node [shape=circle,width=0.5,fixedsize=true];   
+
+  subgraph cluster_b {
+    b1 [label=off,group=b1];
+    b0 [label=on, group=b0];
+  }
+
+  subgraph cluster_c {
+    c1 [label=off,group=c1];
+    c0 [label=on, group=c0];
+  }
+
+  subgraph cluster_d {
+    d1 [label=off, group=di];
+    d0 [label=on,group=d0];
+  }
+
+  edge [arrowhead=open, arrowsize=0.7]
+  b0->d0 [label=u00];  
+  b0->d1 [label=u01];
+  b1->d0 [style=invis];  
+  b1->d1 [style=invis];
+  c0->d0 [label=u10];  
+  c0->d1 [label=u11];
+  c1->d0 [style=invis];  
+  c1->di [style=invis];
+}
