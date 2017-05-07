@@ -289,6 +289,63 @@
       </i></p>
       <br/>
       <hr/>
+
+      <h3>Update 2017-05-07 - Performance Benchmarks - Redzen v 3.0.2</h3>
+
+<p>
+These performance benchmark results were obtain using BenchmarkDotNet; the software is available at:<br/>
+    <a href="https://github.com/colgreen/Redzen/tree/master/Redzen.Benchmarks">https://github.com/colgreen/Redzen/tree/master/Redzen.Benchmarks</a>
+</p>
+<p>
+  Note. the tests with names ending 10M and 100M give total time for 10 million and 100 million calls respectively. E.g. in the table below
+  the Next10M test has a time of 28.7ms, giving an average time per single call of 2.87 microseconds, which is equivalent 
+  to approximate 348 million calls per second; or about 4.3x faster than the equivalent method in System.Random.
+</p>
+
+<h4>Redzen.Numerics.XorShiftRandom</h4>
+<pre>
+BenchmarkDotNet=v0.10.5, OS=Windows 10.0.14393
+Processor=Intel Core i7-6700T CPU 2.80GHz (Skylake), ProcessorCount=8
+Frequency=2742191 Hz, Resolution=364.6719 ns, Timer=TSC
+  [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+  DefaultJob : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+
+
+                 Method |      Mean |     Error |    StdDev |
+----------------------- |----------:|----------:|----------:|
+                Next10M |  28.70 ms | 0.0449 ms | 0.0375 ms |
+      NextUpperBound10M |  46.75 ms | 0.0751 ms | 0.0627 ms |
+ NextLowerUpperBound10M |  50.20 ms | 0.0210 ms | 0.0164 ms |
+          NextDouble10M |  29.91 ms | 0.0935 ms | 0.0829 ms |
+          NextBytes100M | 116.74 ms | 0.3242 ms | 0.2874 ms |
+           NextFloat10M |  32.35 ms | 0.0271 ms | 0.0254 ms |
+            NextUInt10M |  26.59 ms | 0.0117 ms | 0.0109 ms |
+                NextInt |  26.70 ms | 0.0153 ms | 0.0143 ms |
+   NextDoubleNonZero10M |  32.29 ms | 0.0253 ms | 0.0237 ms |
+               NextBool |  31.37 ms | 0.0368 ms | 0.0344 ms |
+               NextByte |  24.20 ms | 0.0126 ms | 0.0117 ms |
+</pre>
+
+<h4>System.Random</h4>
+<pre>
+BenchmarkDotNet=v0.10.5, OS=Windows 10.0.14393
+Processor=Intel Core i7-6700T CPU 2.80GHz (Skylake), ProcessorCount=8
+Frequency=2742191 Hz, Resolution=364.6719 ns, Timer=TSC
+  [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+  DefaultJob : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1637.0
+
+
+                 Method |     Mean |     Error |    StdDev |
+----------------------- |---------:|----------:|----------:|
+                Next10M | 123.4 ms | 0.0534 ms | 0.0473 ms |
+      NextUpperBound10M | 142.2 ms | 0.0310 ms | 0.0259 ms |
+ NextLowerUpperBound10M | 138.0 ms | 0.1507 ms | 0.1410 ms |
+          NextDouble10M | 116.5 ms | 0.0274 ms | 0.0256 ms |
+          NextBytes100M | 979.1 ms | 0.5482 ms | 0.5128 ms |  
+</pre>
+      <br/>
+      <hr/>
+
       <div style="margin-left:10;">
         <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2004 - 2016 Colin
         Green.<br/> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
