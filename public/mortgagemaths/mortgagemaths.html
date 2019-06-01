@@ -4,6 +4,12 @@
     <title>Mortgage Maths</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+      });
+      </script>    
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>
     <link rel="stylesheet" href="../stuff.css" type="text/css" media="screen"/>
   </head>
   <body>
@@ -16,10 +22,9 @@
       <div class="articlebodyinner">
         <br/>
         <h1 align="center">Mortgage Maths</h1>
-        
         <br />
         <br />
-        All examples are based on an initial loan value of 200,000 (the maths is independent of currency).<br/>
+        All examples are based on an initial mortgage/loan value of 200,000 (the maths is independent of currency).<br/>
         <br/>
         <br/>
         <b>The remaining value of a loan throughout its life for three different monthly repayments. Interest rate is 6.5%.</b>
@@ -65,38 +70,161 @@
           <li>You're closer to the point of loan default in the event of a drop in earnings and/or a rise in interest rates.</li>
         </ol>
         <p>
-          Above all, don't trust advice from a bank, generally speaking they are not acting in your best interests but those of their
-          shareholders. If you need outside advice then use an indepedent adviser that's not earning commission from each sale.
+          Above all, don't trust advice from a bank; generally speaking they are not acting in your best interests but those of their
+          shareholders. If you need advice then use an independent adviser that's not earning commission from each sale.
         </p>
-        <br />
-        <p><i>
-            Colin,
-            <br />(some time in 2009)
-        </i></p>
-        <br />
+        <br/>
         <hr/>
-        <br />
-        <font size="+1">Derivation:</font>
-        <div align="center">
-          <font size="+1">Page 1</font>
-        </div>
-        <div style="text-align:center;">
-          <img src="derivation1.png" alt="Mortgage maths derivation page 1" style="border:1px solid black" />
-        </div>
+        <br/>
 
-        <br />
-        <br />
-        <br />
-        <div align="center">
-          <font size="+1">Page 2</font>
-        </div>
-        <div style="text-align:center;">
-          <img src="derivation2.png" alt="Mortgage maths derivation page 2" style="border:1px solid black" />
-        </div>
-        <hr/>
+        <h3>Derivations</h3>
+        <b>Initial Discussion</b>
+        <p>
+          A loan can be represented mathematically as two separate and independent pots of money:
+          <br/>
+          <br/>
+          (1) The initial loan amount (the loan principal) with no repayments, and therefore growing in value (increased debt) over time in line 
+          with the loan interest rate.
+          <br/>
+          <br/>
+          (2) The repayments considered as payments into a savings account with the same rate of interest as the loan. This savings pot will 
+          grow over time with the accumulation of payments and the <a href="https://en.wikipedia.org/wiki/Compound_interest">compound interest</a>
+          on those payments.
+        </p>
+        <p>
+          The compound interest based growth of the savings pot exactly represents the effect of making repayments against the growing loan
+          principal pot. I.e. e.g. early repayments make a more significant contribution to reducing and repaying the loan than later payments.
+        </p>
+        <br/>
+        <br/>
+        <b>Key Variables</b>
+        <blockquote>
+          <table style="border-spacing:1em">
+            <tr><td>$P$ &nbsp; </td><td>Principal load amount.$</td></tr>
+              <tr><td>$n$ &nbsp; </td><td>Term length in months, i.e. the number of monthly payments after which the loan is paid off.</td></tr>
+              <tr><td>$r$ &nbsp; </td><td>Monthly interest rate expressed as a ratio, e.g. 1.01 represents 1% interest per month.</td></tr>
+              <tr><td>$q$ &nbsp; </td><td>Monthly interest rate expressed as a growth rate, e.g. 0.01 represents 1% interest per month, i.e. $r = 1 + q$</td></tr>
+              <tr><td>$a$ &nbsp; </td><td>Fixed monthly payment.</td></tr>
+          </table>       
+      </blockquote>
+
+      <p>Consider the principal amount independently of the repayments (pot 1); without repayments the total amount of debt grows each month.</p>
+      <p>$D_i$: Total debt at month $i$, assuming no repayments (here, debt is expressed as a positive value, growing over time).</p>
+      <p>$$D_i = P \cdot r^i \tag{1}$$</p>
+      <br/>
+
+      <p>
+        Now consider the monthly repayments independently of the loan, as payments into a savings account with the same monthly
+        interest rate as the loan (pot 2).
+      </p>        
+      <p>$S_i$: Total savings at month $i$, assuming no initial savings.</p>
+      <p>$$S_i = \frac{a(1-r^i)}{1-r} \tag{2}$$</p>
+
+      <p>Noting that equation (2) is the formula for the <a href="https://en.wikipedia.org/wiki/Geometric_progression#Geometric_series">sum of the first $i$ terms of a geometric series</a>.</p>
+      <br/>
+
+      <p>Loan value (i.e. remaining debt) at month $i$ is given by subtracting debt at month $i$ from savings at month $i$.</p>
+      <p>$V_i$: Loan value at month $i$ (here, a negative value for $V_i$ represents debt).</p>
+      <p>
+        \begin{align}
+          V_i & = S_i - D_i \tag{3} \\\\
+          V_i & = \frac{a(1-r^i)}{1-r} - P \cdot r^i \tag{4} \\\\
+        \end{align}
+      </p>
+      <br/>
+
+      <p>The loan is paid in full when its value reaches zero, i.e. when $V_i = 0$</p>
+      <p>      
+        \begin{align}
+          0 & = \frac{a(1-r^i)}{1-r} - P \cdot r^i \tag{5} \\\\
+          P \cdot r^i & = \frac{a(1-r^i)}{1-r} \tag{6} \\\\
+        \end{align}
+      </p>
+      <br/>
+      <p>
+        Rearranging equation (6) to find the monthly payment $a$ required to pay off a loan with a given principal amount $P$,
+        ratio $r$, and term length $n$.
+      </p>
+      <p>
+        \begin{align}
+          \frac{a(1-r^n)}{1-r} & = P \cdot r^n \\\\
+          a(1-r^n) & = (1-r)(P \cdot r^n) \\\\
+          a & = \frac{(1-r)(P \cdot r^n)}{(1-r^n)} \tag{7} \\\\
+        \end{align}
+      </p>
+      <br/>
+      
+      <p>Rearranging equation (6) to find the term length $n$ given principal amount $P$, ratio $r$, and repayment amount $a$.</p>
+      <br/>
+      <p>
+        \begin{align}
+          P \cdot r^n & = \frac{a(1-r^n)}{1-r}  \\\\
+          \frac{r^n}{1-r^n} & = \frac{a}{(1-r)P} \\\\
+          \frac{1-r^n}{r^n} & = \frac{(1-r)P}{a} \\\\
+          \frac{1}{r^n}-1 & = \frac{(1-r)P}{a} \\\\
+          \frac{1}{r^n} & = 1 + \frac{(1-r)P}{a} \\\\
+          \frac{1}{r^n} & = \frac{a + (1-r)P}{a} \\\\
+          r^n & = \frac{a}{a + (1-r)P} \\\\
+          n & = \log_r \left[ \frac{a}{a + (1-r)P} \right] \tag{8} \\\\
+        \end{align}
+      </p>
+      <br/>
+      <p>Rearranging equation (6) to find $P$ given ratio $r$, repayment $a$, and term length $n$.</p>
+      <br/>
+      <p>
+        \begin{align}
+          P \cdot r^n & = \frac{a(1-r^n)}{1-r}  \\\\
+          P & = \frac{a(1-r^n)}{(1-r)r^n} \tag{9} \\\\
+        \end{align}
+      </p>
+      <br/>
+      <p>
+        Note that there is no <a href="https://en.wikipedia.org/wiki/Closed-form_expression">closed form expression</a> for finding 
+        $r$ given the other variables. To find $r$ a <a href="https://en.wikipedia.org/wiki/Numerical_method">numerical method</a>
+        can be used; typically a <a href="https://en.wikipedia.org/wiki/Root-finding_algorithm">root finding</a> method is used 
+        such as the <a href="https://en.wikipedia.org/wiki/Root-finding_algorithm#Secant_method">secant method</a>.
+      </p>
+      <p>
+        To find $r$ using a root finding method we can apply the method to equation (4). I.e. the root of that equation is the value of $r$
+        at which $V$ equals zero, and this is the value of $V$ when the mortgage/loan is paid in full.
+      </p>
+      <br/>
+      <br/>
+
+      <b>Interest Rates and Ratios</b>
+      <p>
+        All of the above maths uses the ratio $r$ to represent the mortgage interest rate; this value represents the monthly
+        interest rate as a ratio. An annual interest rate can be converted to its equivalent $r$ value as follows.
+      </p>
+      <p>
+        Typically an interest rate is represented mathematically by a proportion, e.g. 10% is represented by the proportion $0.1$,
+        and the equivalent ratio is that value plus one.
+      </p>
+      <p>$$r_{annual} = 1 + q_{annual}$$</p>
+      <br/>
+      <p>
+        The equivalent monthly interest rate (as a ratio) can be obtained by taking the twelfth root, i.e. the monthly geometric mean 
+        of the annual interest rate ratio.
+      </p>
+      <br/>
+      <p>
+          \begin{align}
+            r_{monthly} & = \sqrt[12]{r_{annual}}  \\\\
+            r_{monthly} & = \sqrt[12]{(1 + q_{annual})} \\\\
+            r & = \sqrt[12]{(1 + q_{annual})} \\\\
+          \end{align}
+      </p>
+      <br/>
+      <p><i>
+          Colin,
+          <br />(some time in 2009)
+          <br/>Derivations revised June 1st, 2019.
+      </i></p>
+      <br />
+      <hr/>
         <div style="margin-left:10;">
           <img src="../creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" />
-          Copyright 2009, 2010, 2011 Colin Green.<br/>
+          Copyright 2009, 2010, 2011, 2019 Colin Green.<br/>
           This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">
             Creative Commons
             Attribution 3.0 License
