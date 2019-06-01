@@ -100,7 +100,7 @@
         <b>Key Variables</b>
         <blockquote>
           <table style="border-spacing:1em">
-            <tr><td>$P$ &nbsp; </td><td>Principal load amount.$</td></tr>
+            <tr><td>$P$ &nbsp; </td><td>Principal load amount.</td></tr>
               <tr><td>$n$ &nbsp; </td><td>Term length in months, i.e. the number of monthly payments after which the loan is paid off.</td></tr>
               <tr><td>$r$ &nbsp; </td><td>Monthly interest rate expressed as a ratio, e.g. 1.01 represents 1% interest per month.</td></tr>
               <tr><td>$q$ &nbsp; </td><td>Monthly interest rate expressed as a growth rate, e.g. 0.01 represents 1% interest per month, i.e. $r = 1 + q$</td></tr>
@@ -114,17 +114,17 @@
       <br/>
 
       <p>
-        Now consider the monthly repayments independently of the loan, as payments into a savings account with the same monthly
+        Now consider the monthly repayments independently of the loan, i.e. as payments into a savings account with the same monthly
         interest rate as the loan (pot 2).
       </p>        
-      <p>$S_i$: Total savings at month $i$, assuming no initial savings.</p>
+      <p>$S_i$: Total value of saving pot at month $i$, assuming no initial savings.</p>
       <p>$$S_i = \frac{a(1-r^i)}{1-r} \tag{2}$$</p>
 
       <p>Noting that equation (2) is the formula for the <a href="https://en.wikipedia.org/wiki/Geometric_progression#Geometric_series">sum of the first $i$ terms of a geometric series</a>.</p>
       <br/>
 
-      <p>Loan value (i.e. remaining debt) at month $i$ is given by subtracting debt at month $i$ from savings at month $i$.</p>
-      <p>$V_i$: Loan value at month $i$ (here, a negative value for $V_i$ represents debt).</p>
+      <p>Loan balance (i.e. remaining debt) at month $i$ is given by subtracting debt at month $i$ from savings at month $i$.</p>
+      <p>$V_i$: Loan balance at month $i$ (here, a negative value for $V_i$ represents debt).</p>
       <p>
         \begin{align}
           V_i & = S_i - D_i \tag{3} \\\\
@@ -133,17 +133,17 @@
       </p>
       <br/>
 
-      <p>The loan is paid in full when its value reaches zero, i.e. when $V_i = 0$</p>
+      <p>The loan is paid in full at month $n$, at which point the loan balance reaches zero, i.e. $V_i = 0$ and $i = n$</p>
       <p>      
         \begin{align}
-          0 & = \frac{a(1-r^i)}{1-r} - P \cdot r^i \tag{5} \\\\
-          P \cdot r^i & = \frac{a(1-r^i)}{1-r} \tag{6} \\\\
+          0 & = \frac{a(1-r^n)}{1-r} - P \cdot r^n \tag{5} \\\\
+          P \cdot r^n & = \frac{a(1-r^n)}{1-r} \tag{6} \\\\
         \end{align}
       </p>
       <br/>
       <p>
         Rearranging equation (6) to find the monthly payment $a$ required to pay off a loan with a given principal amount $P$,
-        ratio $r$, and term length $n$.
+        interest ratio $r$, and term length $n$.
       </p>
       <p>
         \begin{align}
@@ -154,7 +154,7 @@
       </p>
       <br/>
       
-      <p>Rearranging equation (6) to find the term length $n$ given principal amount $P$, ratio $r$, and repayment amount $a$.</p>
+      <p>Rearranging equation (6) to find the term length $n$ given principal amount $P$, interest ratio $r$, and repayment amount $a$.</p>
       <br/>
       <p>
         \begin{align}
@@ -169,7 +169,7 @@
         \end{align}
       </p>
       <br/>
-      <p>Rearranging equation (6) to find $P$ given ratio $r$, repayment $a$, and term length $n$.</p>
+      <p>Rearranging equation (6) to find $P$ given interest ratio $r$, repayment $a$, and term length $n$.</p>
       <br/>
       <p>
         \begin{align}
@@ -193,7 +193,7 @@
 
       <b>Interest Rates and Ratios</b>
       <p>
-        All of the above maths uses the ratio $r$ to represent the mortgage interest rate; this value represents the monthly
+        All of the above maths uses the interest ratio $r$ to represent the mortgage interest rate; this value represents the monthly
         interest rate as a ratio. An annual interest rate can be converted to its equivalent $r$ value as follows.
       </p>
       <p>
