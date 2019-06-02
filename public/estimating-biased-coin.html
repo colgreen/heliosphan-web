@@ -366,10 +366,10 @@ li {
             <p>Multiplying by `x` gives an expression representing each possible sample value multiplied by its probability:</p>
             <p>$$ x \cdot f(x) = \begin{cases} \frac{x}{b-a}, & \text{for a &lt= x &lt= b} \\ 0 & \text{otherwise} \\ \end{cases}$$</p>
 
-            <p>Integrating (i.e. summing over the interval [a,b]) gives the expected value of B:</p>
+            <p>Integrating (i.e. summing over the interval [a,b]) gives the expected value of `f(x)`:</p>
             <p>
                 \begin{align}
-                \Bbb E[B] &= \int _a^b \frac{x}{b-a} dx \\[2ex]
+                \Bbb E[f(x)] &= \int _a^b \frac{x}{b-a} dx \\[2ex]
                 &= \frac{1}{b-a} \left[\frac{x^2}{2}\right]_a^b \\[2ex]
                 &= \frac{1}{b-a} \left( \frac{b^2-a^2}{2} \right) \\[2ex]
                 &= \frac{b^2-a^2}{2(b-a)} \\[2ex]
@@ -381,17 +381,21 @@ li {
                 = (b+a)(b-a)` :</a>
             </p>
             <p>
-                \begin{align} \Bbb E[B] &= \frac{(b+a)(b-a)}{2(b-a)} \\[2ex] &= \frac{b+a}{2} \\ \end{align}
+                \begin{align}
+                    \Bbb E[f(x)] &= \frac{(b+a)(b-a)}{2(b-a)} \\[2ex] 
+                                 &= \frac{b+a}{2} \\ 
+                \end{align}
             </p>
 
             <p>E.g. for interval [0,1]; `a=0, b=1`, giving:</p>
-            <p>$$ \Bbb E[B] = \frac{1}{2} $$</p>
+            <p>$$ \Bbb E[f(x)] = \frac{1}{2} $$</p>
 
             <br />
             <br />
             <hr />
             <b id="srcCode1">Source code #1: Numerical analysis of a single coin flip</b>
             <pre style="white-space: pre-wrap; background: hsl(200,80%,92%);"><code xstyle="background: hsl(220, 80%, 90%);">
+    // C# Source
     private static void RunSimulation()
     {
         Random rng = new Random();
@@ -399,7 +403,7 @@ li {
         int t = 0;
         for(;;)
         {
-            for(int i=0; i<100000000; i++)
+            for(int i=0; i<100_000_000; i++)
                                       {
                 // Take a coin from the pile, i.e. sample B from a uniform random distribution.
                 double b = rng.NextDouble();
@@ -420,6 +424,7 @@ li {
             <hr />
             <b id="srcCode2">Source code #2: Numerical analysis of a single coin flip conditional on a single observed H</b>
             <pre style="white-space: pre-wrap; background: hsl(200,80%,92%);"><code xstyle="background: hsl(220, 80%, 90%);">
+    // C# Source
     private static void RunSimulation()
     {
         Random rng = new Random();
@@ -427,7 +432,7 @@ li {
         int t = 0;
         for(;;)
         {
-            for(int i=0; i<100000000; i++)
+            for(int i=0; i<100_000_000; i++)
                                       {
                 // Take a coin from the pile, i.e. sample B from a uniform random distribution.
                 double b = rng.NextDouble();
