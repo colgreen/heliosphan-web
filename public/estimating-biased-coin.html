@@ -366,10 +366,13 @@ li {
             <p>Multiplying by `x` gives an expression representing each possible sample value multiplied by its probability:</p>
             <p>$$ x \cdot f(x) = \begin{cases} \frac{x}{b-a}, & \text{for a &lt= x &lt= b} \\ 0 & \text{otherwise} \\ \end{cases}$$</p>
 
-            <p>Integrating (i.e. summing over the interval [a,b]) gives the expected value of `f(x)`:</p>
+            <p>
+                Integrating (i.e. summing over the interval [a,b]) gives the expected value of samples from the distribution.
+                Here `Z` represents a sample (or any sample, they all have the same expected value) from the p.d.f.
+            </p>
             <p>
                 \begin{align}
-                \Bbb E[f(x)] &= \int _a^b \frac{x}{b-a} dx \\[2ex]
+                \Bbb E[Z] &= \int _a^b \frac{x}{b-a} dx \\[2ex]
                 &= \frac{1}{b-a} \left[\frac{x^2}{2}\right]_a^b \\[2ex]
                 &= \frac{1}{b-a} \left( \frac{b^2-a^2}{2} \right) \\[2ex]
                 &= \frac{b^2-a^2}{2(b-a)} \\[2ex]
@@ -382,13 +385,13 @@ li {
             </p>
             <p>
                 \begin{align}
-                    \Bbb E[f(x)] &= \frac{(b+a)(b-a)}{2(b-a)} \\[2ex] 
-                                 &= \frac{b+a}{2} \\ 
+                    \Bbb E[Z] &= \frac{(b+a)(b-a)}{2(b-a)} \\[2ex] 
+                              &= \frac{b+a}{2} \\ 
                 \end{align}
             </p>
 
             <p>E.g. for interval [0,1]; `a=0, b=1`, giving:</p>
-            <p>$$ \Bbb E[f(x)] = \frac{1}{2} $$</p>
+            <p>$$ \Bbb E[Z] = \frac{1}{2} $$</p>
 
             <br />
             <br />
