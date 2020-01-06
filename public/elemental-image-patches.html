@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Elemental Image Patches</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=0.75"/>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+        tex2jax: {inlineMath: [['`','`'], ['\\(','\\)']]},
+        });
+    </script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>      
+    <link rel="stylesheet" href="stuff.css" type="text/css" media="screen"/>
+
+  <style>
+img.patch {
+  margin: 5px;
+  border: 2px;
+  border-color: black;
+  border-style: solid;
+}
+
+figure {
+  text-align: center;
+  margin: 0.5em;
+  padding: 0.5em; 
+}
+  </style>
+
+  </head>
+  <body>
+    <div class="bannercolumn">
+        <a href="index.html">
+            <img src="banner_v5_thin.jpg" style="display: block; border-radius: 6px" alt="Welcome to Heliosphan" />
+        </a>
+    </div>
+    <div class="articlebodyouter">
+      <div class="articlebodyinner">
+        <br/>
+        <h2 align="center">Elemental Image Patches</h2>
+        <br />
+        <p>
+          Consider a large corpus of monochrome images, such as all images on the public internet converted to greyscale.
+          Now consider, for a given N, each possible N x N image patch, i.e. every possible N x N region in all images including
+          overlapping regions.
+        </p>
+        <p>
+          For N=2 and an 8 bit greyscale there are a possible 2^(4*8) ≅ 1.8 * 10^19 patch states, reducing to 4096 patch states 
+          with 3 bit pixels, which is still a reasonably good encoding, i.e. a human can still recognize the content of 3 bit 
+          greyscale images (8 greyscale levels) in most cases. However, if we increase N to 3 and beyond then once again the number 
+          of states become very large, e.g. for N=3 and 3 bit pixels we have 2^(9*3) or about 134 million states.
+        </p>
+        <p>
+          For the N=2 and 3 bit pixels case we could now compute a histogram over the 4096 possible patch states, and choose to 
+          encode images by using only the most frequent patches. Alternatively we could define a set of bichromatic patches 
+          (i.e. strictly black and white pixels), and for each real image patch find the nearest matching bichromatic patch and a 
+          factor that describes how close the image patch is to that bichromatic patch.
+        </p>
+        <p>
+          E.g. consider the bichromatic patch with the two left pixels set to black, and the two right pixels set to white white,
+          and an image patch from a straight vertical edge in which there are two different greyscales either side of the edge,
+          e.g. see the left hand edge of the building in Figure 1.
+        </p>
+        <figure>
+          <img src="elemental-image-patches/godrevy-lookout-station.png" width="540" style="image-rendering: pixelated"/>
+          <figcaption>Figure 1. Godrevy Lookout Station.</figcaption>
+        </figure>
+          
+        <p>
+          Although the near white pixels of the building wall are a strong match for the pure white pixels in the bichromatic patch,
+          the left hand pixels are a light grey, so are a poor match for the pure black pixels. Hence, if we say the patch is a match of 0.5 then 
+          it's not clear whether one or both sides are poor matches, hence, although this encoding may have some uses, recreating the original images
+          is not one of them (and thus this encoding is not a good choice for a <a href="generative-models.html">generative model</a>).
+        </p>
+        <p>
+          To address this problem we can extend the encoding to use two values, one each for the black and white pixels of the bichromatic patch, 
+          or equivalently, two greyscale values. Interestingly, the closest match bichromatic patch can be found first, and then the two greyscale 
+          values found by taking the mean of the corresponding pixels in the image patch.
+        </p>
+        <p>
+          The encoding is further improved because the patches are overlapping, thus, to obtain an output value for a pixel in generative mode
+          we take the mean pixel values from all patches a given pixel is in.
+        </p>
+        <p>
+          At this point it's worth mentioning JPEG encoding which uses non-overlapping 8 x 8 patches (called blocks). At 8 x 8 a single block
+          can represent a reasonable amount of image structure, and to cope with this JPEG uses a kind of spatial frequency matching similar to 
+          the fourier transform, along with the ability to match multiple overlapping frequencies within one patch.
+        </p>
+        <p>
+          If instead of an N=8 patch (as per JPEG) we use a much smaller patch size of say N=3, then the amount of structure within a patch is 
+          limited and thus frequency matching within a patch is not practical. Instead consider a set of 'exemplar' or 'elemental' bichromatic
+          patches. What would a good set of patches lookup like, for say N=3? And can these be automatically discovered?
+        </p>
+
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <hr/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+
+        <h3>3 x 3 Patches</h3>
+        <div>
+          <b>Verticals</b>
+          <br/>
+          <img src="elemental-image-patches/100100100.png" class="patch"/>
+          <img src="elemental-image-patches/110110110.png" class="patch"/>
+          <img src="elemental-image-patches/011011011.png" class="patch"/>
+          <img src="elemental-image-patches/001001001.png" class="patch"/>
+          <img src="elemental-image-patches/010010010.png" class="patch"/>
+        </div>
+        <br/>
+
+        
+        <div>
+          <b>Horizonals</b>
+          <br/>
+          <img src="elemental-image-patches/111000000.png" class="patch"/>
+          <img src="elemental-image-patches/111111000.png" class="patch"/>
+          <img src="elemental-image-patches/000111111.png" class="patch"/>
+          <img src="elemental-image-patches/000000111.png" class="patch"/>
+          <img src="elemental-image-patches/000111000.png" class="patch"/>
+        </div>
+        <br/>
+
+        <div>
+          <b>Diagonals</b>
+          <br/>
+          <img src="elemental-image-patches/100000000.png" class="patch"/>
+          <img src="elemental-image-patches/110100000.png" class="patch"/>
+          <img src="elemental-image-patches/111110100.png" class="patch"/>
+          <img src="elemental-image-patches/111111110.png" class="patch"/>
+          <br/>
+          <img src="elemental-image-patches/001000000.png" class="patch"/>
+          <img src="elemental-image-patches/011001000.png" class="patch"/>
+          <img src="elemental-image-patches/111011001.png" class="patch"/>
+          <img src="elemental-image-patches/111111011.png" class="patch"/>
+          <br/>
+          <img src="elemental-image-patches/000000001.png" class="patch"/>
+          <img src="elemental-image-patches/000001011.png" class="patch"/>
+          <img src="elemental-image-patches/001011111.png" class="patch"/>
+          <img src="elemental-image-patches/011111111.png" class="patch"/>
+          <br/>
+          <img src="elemental-image-patches/000000100.png" class="patch"/>
+          <img src="elemental-image-patches/000100110.png" class="patch"/>
+          <img src="elemental-image-patches/100110111.png" class="patch"/>
+          <img src="elemental-image-patches/110111111.png" class="patch"/>
+          <br/>
+          <img src="elemental-image-patches/010100000.png" class="patch"/>
+          <img src="elemental-image-patches/001010100.png" class="patch"/>
+          <img src="elemental-image-patches/000001010.png" class="patch"/>
+          <br/>
+          <img src="elemental-image-patches/010001000.png" class="patch"/>
+          <img src="elemental-image-patches/100010001.png" class="patch"/>
+          <img src="elemental-image-patches/000100010.png" class="patch"/>
+
+        </div>
+
+
+
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <hr/>
+
+        <div>
+          <b>Curves</b>
+          <br/>
+          <img src="elemental-image-patches/010101000.png" class="patch"/>
+          <img src="elemental-image-patches/010001010.png" class="patch"/>
+          <img src="elemental-image-patches/000101010.png" class="patch"/>
+          <img src="elemental-image-patches/010100010.png" class="patch"/>
+        </div>
+
+        <br/>
+      </div>
+    </div>
+  </body>
+</html>
