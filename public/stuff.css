@@ -4,7 +4,7 @@ body
     font-family: Arial, Helvetica;
 }
 a {
-    color: #016768;
+    color: #800080;
     text-decoration: none;
     font-weight: bold;
 }
@@ -40,24 +40,20 @@ a:hover {
 }
 .frontpagebubble
 {
-    background-color: #ececec;
-    padding: 15px;
+    background-color:#edf3f5;
+    padding: 10px;
     border-radius: 10px;
     width:55%;
     max-width: 530px;
     margin-left: auto;
     margin-right: auto;
-    font-size: medium;
 }
 .frontpagebubble li 
 {
    list-style-type: none;
-   padding: 5px 0px;
-}
-er
-{
-    margin-left: auto;
-    margin-right: auto;
+   padding: 3px 0px;
+   font-size: 0.95em;
+   font-weight: bold;
 }
 .articlebodyouter
 {
@@ -87,7 +83,7 @@ er
 .topictitle
 {
    text-align: center;
-   padding-bottom: 12px;
+   padding-bottom: 10px;
 }
 
 /* Style overrides for narrow screens. */
