@@ -12,6 +12,25 @@
       });
   </script>
   <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML-full'></script>
+  <style>
+    .perftable {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    .perftable th {
+      border: 1px solid #dddddd;
+      text-align: center;
+      padding: 8px;
+    }
+
+    .perftable td {
+      border: 1px solid #dddddd;
+      text-align: right;
+      padding: 8px;
+    }
+    </style>
 </head>
 <body>
   <div class="bannercolumn">
@@ -248,83 +267,30 @@
 
       <h4>Performance Measurements</h4>
 
-      Hardware<br/> CPU: Intel Core i7 920<br/> 4 cores, 8 with hyperthreading (enabled).<br/> Bloomfield / 45nm / 1.248V<br/>      Core Speed 2.798 GHz<br/> Bus Speed 133.2 MHz<br/> Multiplier 21x<br/> RAM: DDR3, 3 channels. 533 MHz<br/><br/><br/>
-
-      <style type="text/css">
-        .tftable {
-          font-size: 12px;
-          color: #333333;
-          width: 500px;
-          border-width: 1px;
-          border-color: #a9a9a9;
-          border-collapse: collapse;
-        }
-        
-        .tftable th {
-          font-size: 12px;
-          background-color: #b8b8b8;
-          border-width: 1px;
-          padding: 8px;
-          border-style: solid;
-          border-color: #a9a9a9;
-          text-align: left;
-        }
-        
-        .tftable tr {
-          background-color: #cdcdcd;
-        }
-        
-        .tftable td {
-          font-size: 12px;
-          border-width: 1px;
-          padding: 8px;
-          border-style: solid;
-          border-color: #a9a9a9;
-        }
-        
-        .tftable tr:hover {
-          background-color: #ffffff;
-        }
-      </style>
-
-      <table class="tftable" border="1">
+      <table class="perftable">
         <tr>
-          <th>Cores</th>
-          <th>Box Muller (Million samples/sec)</th>
-          <th>Ziggurat (Million samples/sec)</th>
-          <th>Speedup</th>
+          <th>Method</th>
+          <th>Speed <br/>(million samples/sec)</th>
+          <th>Speedup Factor <br/>(relative to Box-Muller)</th>
         </tr>
         <tr>
-          <td>1</td>
-          <td>23.2</td>
-          <td>36.7</td>
-          <td>1.58x</td>
+          <td style="text-align: center"> Box-Muller</td>
+          <td>47.5 </td>
+          <td>1.0x</td>
         </tr>
         <tr>
-          <td>2</td>
-          <td>42</td>
-          <td>73.3</td>
-          <td>1.74x</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>66</td>
-          <td>108</td>
-          <td>1.63x</td>
-        </tr>
-        <tr>
-          <td>4</td>
-          <td>83</td>
-          <td>133</td>
-          <td>1.60x</td>
-        </tr>
-        <tr>
-          <td>8 (hyperthreading)</td>
-          <td>138</td>
-          <td>204</td>
-          <td>1.47</td>
+          <td style="text-align: center">Ziggurat</td>
+          <td>158.9</td>
+          <td>3.3x</td>
         </tr>
       </table>
+      <br/>
+
+      <h5>Performance test platform/environment details</h5>
+      <b>CPU</b>: AMD Ryzen PRO 5750G (TSMC 7nm FinFET).<br/>
+      <b>RAM</b>: DDR4-3200, Dual Channel.<br/>
+      Tests are for single thread performance only.<br/>
+      <b>Platform</b>: Windows 10 (10.0.19043), .NET 6 (6.0.100), 64bit process.<br/>
       <br />
       <br />
 
@@ -345,7 +311,9 @@
       <br />
       <p><i>
         Colin,<br />
-        September 2011
+        September 2011<br />
+        <br />
+        Performance measurements updated November 2021
     </i></p>
       <br />
       <hr/>
