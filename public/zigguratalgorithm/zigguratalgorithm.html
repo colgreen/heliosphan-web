@@ -270,20 +270,29 @@
       <table class="perftable">
         <tr>
           <th>Method</th>
-          <th>Speed <br/>(million samples/sec)</th>
-          <th>Speedup Factor <br/>(relative to Box-Muller)</th>
+          <th>Speed<br/>(million samples/sec)</th>
+          <th>Speedup Factor<br/>(relative to Box-Muller)</th>
         </tr>
         <tr>
           <td style="text-align: center"> Box-Muller</td>
-          <td>47.5 </td>
+          <td>92.1</td>
           <td>1.0x</td>
         </tr>
         <tr>
           <td style="text-align: center">Ziggurat</td>
-          <td>158.9</td>
-          <td>3.3x</td>
+          <td>177.9</td>
+          <td>1.93x </td>
         </tr>
       </table>
+      <br/>
+
+      <h5>Notes</h5>
+      <li>The above performance benchmarks are based on generation of double precision floating point values; the equivalent benchmark
+      figures for single precision values were similar (on the target platform - details below)</li><br/>
+      <li>The Box-Muller method inherently produces two samples per iteration, therefore if a single sample is required then one sample must be
+      discarded on each call, thus halving the average speed. To achieve a fair comparison between the two methods (Ziggurat vs Box-Muller),
+      the above benchmark figures are based on population of arrays with gaussian samples, with the Box-Muller code populating two array elements per 
+      loop to fully utilise the two generated values.</li>
       <br/>
 
       <h5>Performance test platform/environment details</h5>
