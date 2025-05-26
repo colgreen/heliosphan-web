@@ -28,7 +28,7 @@
             <br />
             <p>
                 Consider a very simple generative model consisting of a single variable B representing the probability of a biased coin toss landing heads up.
-                We are given a data set consisting of a seqence of actual coin tosses and we are tasked with fitting the model to the data, i.e. finding 
+                We are given a data set consisting of a sequence of actual coin tosses and we are tasked with fitting the model to the data, i.e. finding 
                 the value of B that best represents the data (or more specifically - that best fits the system from which the data was sampled).
             </p>
             <p>
@@ -79,15 +79,15 @@
                 and this has been a long running issue and topic of research with error <a href="https://en.wikipedia.org/wiki/Backpropagation">backpropagation</a>.
             </p>
             <p>
-                The need for target vectors also causes problems, e.g. for the inputs we might have a set of raw images, and for the corresponding outputs we migth 
+                The need for target vectors also causes problems, e.g. for the inputs we might have a set of raw images, and for the corresponding outputs we might 
                 have a series of labels of things (i.e. binary categories) for each image (a ball of string, a kitten...).
-                The choice of labels will typically be somewhat artifical in that they're defined by people and what they think the relevant features are in each image,
+                The choice of labels will typically be somewhat artificial in that they're defined by people and what they think the relevant features are in each image,
                 but the choice of labels may not be fully representative of everything 'going on'
                 in an image that is relevant to the model we wish to build, after all a picture is worth a thousand words
                 
                 
-                 e.g. if we ant to build a genral purpose image recognition model then we want to model
-                everything in an image - the fluffiness of the cat, the texture of the carpet, the subtle chaneg in light tone across a room, the wound fibres that
+                 e.g. if we ant to build a general purpose image recognition model then we want to model
+                everything in an image - the fluffiness of the cat, the texture of the carpet, the subtle change in light tone across a room, the wound fibres that
                 make up the string, the relative positions of the cat and and the ball of string... and so on.
             </p>
 
@@ -160,12 +160,12 @@
 
             <p>
                 There follows a series of notes and annotations to
-                <a href="http://sifter.org/~simon/journal/20150603.html">Gradient of Auto-Normalized Probability Distributions</a>
+                <a href="https://sifter.org/~simon/journal/20150603.html">Gradient of Auto-Normalized Probability Distributions</a>
             </p>
             <br/>
             <b>Introduction</b>
             <p>
-                This post is an exploration of some of the maths in furf networks (see: <a href="http://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection</a>). 
+                This post is an exploration of some of the maths in furf networks (see: <a href="https://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection</a>). 
                 A furf net is a <a href="https://en.wikipedia.org/wiki/Generative_model">generative model</a> that is capable of generating and completing 
                 patterns stochastically, and also learning patterns we present to it.
             </p>
@@ -181,7 +181,7 @@
                 node stochastically by treating each node's activation level as its probability of activation.  
             </p>
             <p>
-                In <a href="http://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection</a> the groups are arranged as a tree, i.e. 
+                In <a href="https://sifter.org/~simon/fusion-reflection.html">Fusion-Reflection</a> the groups are arranged as a tree, i.e. 
                 the nodes in a group are fully connected to all the nodes in one parent group, and a group can have multiple child groups. Although 
                 the furf generative model and learning law are powerful, the restriction to a tree topology limits the expressibility of the
                 generative model and therefore the type of abstract associations that can be learned. As such there is good motivation to extend furf trees
@@ -221,7 +221,7 @@
                 'post-normalise' the activation levels?
             </p>
             <p>
-                <a href="http://sifter.org/~simon/journal/20150603.html">Gradient of Auto-Normalized Probability Distributions</a>                is working on the basis that the activation levels are not naturally normalised and must therefore be post-normalised
+                <a href="https://sifter.org/~simon/journal/20150603.html">Gradient of Auto-Normalized Probability Distributions</a>                is working on the basis that the activation levels are not naturally normalised and must therefore be post-normalised
                 before stochastically selecting a state/node within a group. As such we arrive at equation (1) (I will refer
                 to the equation numbers used in the source article, and will annotate those equations with intermediate steps/equations
                 numbered accordingly).
@@ -422,7 +422,7 @@
             <hr />
             <div>
                 <img src="creativecommons88x31.png" border="0" align="left" hspace="10" vspace="0" /> Copyright 2015 Colin
-                Green.<br /> This article is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/" rel="nofollow">Creative Commons
+                Green.<br /> This article is licensed under a <a href="https://creativecommons.org/licenses/by/3.0/" rel="nofollow">Creative Commons
             Attribution 3.0 License
                 </a>
                 <br />
